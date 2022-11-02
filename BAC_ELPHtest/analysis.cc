@@ -90,9 +90,9 @@ void analysis(){
     //if(tot<min)min = tot;
     for(int j=0;j<4;j++){
       hist_Ta[i][j] = new TH1D(Form("hist_T%da_%dcm",j+4,-4+2*i),Form("hist_T%da_%dcm",j+4,-4+2*i),450,200,2000);
-      hist_Tt[i][j] = new TH1D(Form("hist_T%dt_%dcm",j+4,-4+2*i),Form("hist_T%dt_%dcm",j+4,-4+2*i),60,650,710);
+      hist_Tt[i][j] = new TH1D(Form("hist_T%dt_%dcm",j+4,-4+2*i),Form("hist_T%dt_%dcm",j+4,-4+2*i),80,650,730);
       f_a[i][j] = new TF1(Form("f_Tt%da_%dcm",j+4,-4+2*i),"landau(0)",200,2000);
-      f_Tt[i][j] = new TF1(Form("f_Tt%dt_%dcm",j+4,-4+2*i),"gaus(0)",650,710);
+      f_Tt[i][j] = new TF1(Form("f_Tt%dt_%dcm",j+4,-4+2*i),"gaus(0)",650,730);
 			  
 			  
     }
@@ -139,7 +139,7 @@ void analysis(){
   for(int i=0;i<N;i++){
     for(int j=0;j<4;j++){
       c2->cd(4*i+j+1);
-      hist_Tt[i][j]->Fit(f_Tt[i][j],"Q","",650,710);
+      hist_Tt[i][j]->Fit(f_Tt[i][j],"Q","",650,730);
       f_Tt[i][j]->GetParameters(pa_t[i][j]);
     }
   }
@@ -220,7 +220,7 @@ void analysis(){
   Double_t factor = 1.;
   for(int i=0;i<N;i++){
     c4->cd(i+1);
-    hist_Suma[i]->Scale(factor,"width");
+    //hist_Suma[i]->Scale(factor,"width");
     hist_Suma[i]->Fit(f_suma[i],"Q","",0,100);
     f_suma[i]->GetParameters(pa_suma[i]);
     
@@ -239,11 +239,11 @@ void analysis(){
   TH1D *hist_simul[N];
   TF1 *fit_simul[N];
   
-  file_simul[0] = new TFile("../BACSimul/build/221024_ELPH_m40.root","read");
-  file_simul[1] = new TFile("../BACSimul/build/221024_ELPH_m20.root","read");
-  file_simul[2] = new TFile("../BACSimul/build/221024_ELPH_50_re.root","read");
-  file_simul[3] = new TFile("../BACSimul/build/221024_ELPH_20.root","read");
-  file_simul[4] = new TFile("../BACSimul/build/221024_ELPH_40.root","read");
+  file_simul[0] = new TFile("../../simul_data/221024_ELPH_m40.root","read");
+  file_simul[1] = new TFile("../../simul_data/221024_ELPH_m20.root","read");
+  file_simul[2] = new TFile("../../simul_data/221024_ELPH_50_re.root","read");
+  file_simul[3] = new TFile("../../simul_data/221024_ELPH_20.root","read");
+  file_simul[4] = new TFile("../../simul_data/221024_ELPH_40.root","read");
 
   for(int i=0;i<N;i++){
     data_simul[i] = (TTree*)file_simul[i]->Get("tree");
@@ -309,7 +309,7 @@ void analysis(){
   Int_t nhMppc[2];
   TH1D *hist_com[3];
   file_com[0] = new TFile("data/sum_0cm.root","read");
-  file_com[1] = new TFile("../BACSimul/build/221024_ELPH_50_re.root","read");
+  file_com[1] = new TFile("../../simul_data/221024_ELPH_50_re.root","read");
   file_com[2] = new TFile("../../BACSimul/build/221024_E72_50.root","read");
   for(int i=0;i<3;i++){
     data_com[i] = (TTree*)file_com[i]->Get("tree");
