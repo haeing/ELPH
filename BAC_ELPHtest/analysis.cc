@@ -2,7 +2,7 @@ void analysis(){
 
   //gStyle->SetOptStat(0);
 
-  TFile *file_pe = new TFile("data/run00333.root","read");
+  TFile *file_pe = new TFile("../../ELPH_data/exp_data/run00333.root","read");
   TTree *data_pe = (TTree*)file_pe->Get("tree");
   Double_t ADC_pe[4];
   Double_t ADCs_pe[1];
@@ -78,13 +78,13 @@ void analysis(){
 
   Int_t start_pos = -6;
 
-  file_po[0] = new TFile("data/run00313.root","read");
-  file_po[1] = new TFile("data/run00314.root","read");
-  file_po[2] = new TFile("data/run00315.root","read");
-  file_po[3] = new TFile("data/run00296.root","read");
-  file_po[4] = new TFile("data/run00316.root","read");
-  file_po[5] = new TFile("data/run00317.root","read");
-  file_po[6] = new TFile("data/run00319.root","read");
+  file_po[0] = new TFile("../../ELPH_data/exp_data/run00313.root","read");
+  file_po[1] = new TFile("../../ELPH_data/exp_data/run00314.root","read");
+  file_po[2] = new TFile("../../ELPH_data/exp_data/run00315.root","read");
+  file_po[3] = new TFile("../../ELPH_data/exp_data/run00296.root","read");
+  file_po[4] = new TFile("../../ELPH_data/exp_data/run00316.root","read");
+  file_po[5] = new TFile("../../ELPH_data/exp_data/run00317.root","read");
+  file_po[6] = new TFile("../../ELPH_data/exp_data/run00319.root","read");
   
   for(int i=0;i<N;i++){
     data_po[i] = (TTree*)file_po[i]->Get("tree");
@@ -260,7 +260,7 @@ void analysis(){
   //gDirectory -> cd("Rint:/");  //Change to Working directory (default)
   
   for(int i=0;i<N;i++){
-    file3[i] = new TFile(Form("data/sum_%dcm.root",start_pos+2*i),"recreate");
+    file3[i] = new TFile(Form("../../ELPH_data/exp_data/sum_%dcm.root",start_pos+2*i),"recreate");
     data3[i] = new TTree("tree","tree");
     data3[i]->Branch("ADC",&ADC_sum[i],"ADC/D");  //Branch(branchname, &value);
     
@@ -474,13 +474,13 @@ for(int i=0;i<N;i++){
   TH1D *hist_simul[N];
   TF1 *fit_simul[N];
   
-  file_simul[0] = new TFile("../ELPHsimul/build/elph_221020_m6.5_0_simul.root","read");
-  file_simul[1] = new TFile("../ELPHsimul/build/elph_221020_m4.5_0_simul.root","read");
-  file_simul[2] = new TFile("../ELPHsimul/build/elph_221020_m2.5_0_simul.root","read");
-  file_simul[3] = new TFile("../ELPHsimul/build/elph_221020_m0.5_0_simul.root","read");
-  file_simul[4] = new TFile("../ELPHsimul/build/elph_221020_1.5_0_simul.root","read");
-  file_simul[5] = new TFile("../ELPHsimul/build/elph_221020_3.5_0_simul.root","read");
-  file_simul[6] = new TFile("../ELPHsimul/build/elph_221020_5.5_0_simul.root","read");
+  file_simul[0] = new TFile("../../ELPH_data/simul_data/elph_221020_m6.5_0_simul.root","read");
+  file_simul[1] = new TFile("../../ELPH_data/simul_data/elph_221020_m4.5_0_simul.root","read");
+  file_simul[2] = new TFile("../../ELPH_data/simul_data/elph_221020_m2.5_0_simul.root","read");
+  file_simul[3] = new TFile("../../ELPH_data/simul_data/elph_221020_m0.5_0_simul.root","read");
+  file_simul[4] = new TFile("../../ELPH_data/simul_data/elph_221020_1.5_0_simul.root","read");
+  file_simul[5] = new TFile("../../ELPH_data/simul_data/elph_221020_3.5_0_simul.root","read");
+  file_simul[6] = new TFile("../../ELPH_data/simul_data/elph_221020_5.5_0_simul.root","read");
 
 
   for(int i=0;i<N;i++){
@@ -557,7 +557,7 @@ for(int i=0;i<N;i++){
   Double_t npe[1];
   Int_t nhMppc[1];
   TH1D *hist_com[2];
-  file_com[0] = new TFile("data/sum_0cm.root","read");
+  file_com[0] = new TFile("../../ELPH_data/exp_data/sum_0cm.root","read");
   file_com[1] = new TFile("../ELPHsimul/build/elph_221020_0_0_simul.root","read");
   //file_com[1] = new TFile("../../simul_data/221024_ELPH_50_re.root","read");
   //file_com[2] = new TFile("../../BACSimul/build/221024_E72_50.root","read");
