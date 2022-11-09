@@ -1,3 +1,7 @@
+Double_t timewalkfit(Double_t *x, Double_t *par){
+  return -par[0]+par[1]/std::sqrt(x[0]);
+}
+
 void analysis(){
 
   //gStyle->SetOptStat(0);
@@ -65,6 +69,9 @@ void analysis(){
   TH1D *hist_indt[N][4];
   TH1D *hist_Suma[N];
   TH1D *hist_Sumt[N];
+  
+  TH1D *hist_Suma_cut[N];
+  TH1D *hist_Sumt_cut[N];
   TH1D *multi[N];
   TF1 *f_a[N][4];
   TF1 *f_Tt[N][4];
@@ -73,7 +80,11 @@ void analysis(){
   TF1 *f_sumt[N];
   TF1 *f_suma[N];
 
+  TF1 *f_time_sum[N];
+
   TH2D *ind_sum[N];
+  TH2D *adc_tdc_sum[N];
+  TH2D *adc_tdc_sum_c[N];
   TH2D *adc_tdc_ind[N][4];
 
   Int_t start_pos = -6;
@@ -123,17 +134,26 @@ void analysis(){
 			  
     }
     hist_Suma[i] = new TH1D(Form("hist_Suma_%dcm",start_pos+2*i),Form("hist_Suma_%dcm",start_pos+2*i),100,-10,60);
-    hist_Sumt[i] = new TH1D(Form("hist_Sumt_%dcm",start_pos+2*i),Form("hist_Sumt_%dcm",start_pos+2*i),200,650,850);
+    hist_Sumt[i] = new TH1D(Form("hist_Sumt_%dcm",start_pos+2*i),Form("hist_Sumt_%dcm",start_pos+2*i),200,-100,100);
+
+    hist_Suma_cut[i] = new TH1D(Form("hist_Suma_%dcm_cut",start_pos+2*i),Form("hist_Suma_%dcm_cut",start_pos+2*i),100,-10,60);
+    hist_Sumt_cut[i] = new TH1D(Form("hist_Sumt_%dcm_cut",start_pos+2*i),Form("hist_Sumt_%dcm_cut",start_pos+2*i),200,-100,100);
 
     hist_inda[i] = new TH1D(Form("hist_inda_%dcm",start_pos+2*i),Form("hist_inda_%dcm",start_pos+2*i),100,-10,60);
     
-    f_sumt[i] = new TF1(Form("f_sumt_%dcm",start_pos+2*i),"gaus(0)",650,850);
+    f_sumt[i] = new TF1(Form("f_sumt_%dcm",start_pos+2*i),"gaus(0)",-100,100);
     f_suma[i] = new TF1(Form("f_suma_%dcm",start_pos+2*i),"landau(0)",-10,60);
 
     f_inda[i] = new TF1(Form("f_inda_%dcm",start_pos+2*i),"landau(0)",-10,60);
-    ind_sum[i] = new TH2D(Form("ind_sum%d",i),Form("ind_sum%d",i),200,0,100,200,0,100);
+
+    f_time_sum[i] = new TF1(Form("f_time_sum_%dcm",start_pos+2*i),timewalkfit,200,2000,2);
+    ind_sum[i] = new TH2D(Form("ind_sum%d",i),Form("ind_sum%d",i),310,-500,2500,200,-500,1500);
 
     multi[i] = new TH1D(Form("multi%d",i),"multiplicity",6,0,6);
+
+    adc_tdc_sum[i] = new TH2D(Form("adc_tdc_sum_%dcm",start_pos+2*i),Form("adc_tdc_sum_%dcm",start_pos+2*i),100,0,2000,40,670,710);
+    adc_tdc_sum_c[i] = new TH2D(Form("adc_tdc_sum_%dcm_c",start_pos+2*i),Form("adc_tdc_sum_%dcm_c",start_pos+2*i),100,0,2000,100,-50,50);
+    
     
 
     
@@ -170,10 +190,10 @@ void analysis(){
     for(int j=0;j<4;j++){
       hist_Ta[i][j]->Fit(f_a[i][j],"Q0","",200,2000);
       f_a[i][j]->GetParameters(pa_a[i][j]);
-      std::cout<<"ADC MPV : "<<pa_a[i][j][1]<<" and sigma : "<<pa_a[i][j][2]<<std::endl;
+      //std::cout<<"ADC MPV : "<<pa_a[i][j][1]<<" and sigma : "<<pa_a[i][j][2]<<std::endl;
       hist_Tt[i][j]->Fit(f_Tt[i][j],"Q0","",650,730);
       f_Tt[i][j]->GetParameters(pa_t[i][j]);
-      std::cout<<"TDC mean : "<<pa_t[i][j][1]<<" and sigma : "<<pa_t[i][j][2]<<std::endl;
+      //std::cout<<"TDC mean : "<<pa_t[i][j][1]<<" and sigma : "<<pa_t[i][j][2]<<std::endl;
     }
   }
 
@@ -284,21 +304,57 @@ void analysis(){
 
 
   //BAC TDC histogram
+
   for(int i=0;i<N;i++){
     file3[i]->cd();
     for(int n=0;n<tot[i];n++){
       data_po[i]->GetEntry(n);
       pass = 0;
       for(int j=0;j<4;j++){
-	if(Ta[i][j][0]>pa_a[i][j][1]-1*pa_a[i][j][2]&&Ta[i][j][0]<pa_a[i][j][1]+20*pa_a[i][j][2]){
-	  if(Tt[i][j][0][0]>pa_t[i][j][1]-2*pa_t[i][j][2]&&Tt[i][j][0][0]<pa_t[i][j][1]+2*pa_t[i][j][2]){
+	if(Ta[i][j][0]>pa_a[i][j][1]-3*pa_a[i][j][2]&&Ta[i][j][0]<pa_a[i][j][1]+50*pa_a[i][j][2]){
+	  if(Tt[i][j][0][0]>pa_t[i][j][1]-3*pa_t[i][j][2]&&Tt[i][j][0][0]<pa_t[i][j][1]+3*pa_t[i][j][2]){
 	    pass+=1;
 	  }
 	}
       }
       if(pass==4){
+	adc_tdc_sum[i]->Fill(ADCs[i][0],TDCs[i][0][0]);
+      }
+    }
+  }
+
+  Double_t time_sum[N][2];
+  TCanvas *c_2d_sum = new TCanvas("c_2d_sum","2D histogram of SUM",800,650);
+  c_2d_sum->Divide(N);
+  for(int i=0;i<N;i++){
+    c_2d_sum->cd(i+1);
+    if(i==0||i==N-1)adc_tdc_sum[i]->Fit(f_time_sum[i],"","",200,1000);
+    else{adc_tdc_sum[i]->Fit(f_time_sum[i],"","",200,1500);}
+    adc_tdc_sum[i]->Draw("colz");
+    f_time_sum[i]->GetParameters(time_sum[i]);
+    
+  }
+
+	
+
+  
+  for(int i=0;i<N;i++){
+    file3[i]->cd();
+    for(int n=0;n<tot[i];n++){
+      data_po[i]->GetEntry(n);
+      pass = 0;
+      for(int j=0;j<4;j++){
+	if(Ta[i][j][0]>pa_a[i][j][1]-3*pa_a[i][j][2]&&Ta[i][j][0]<pa_a[i][j][1]+50*pa_a[i][j][2]){
+	  if(Tt[i][j][0][0]>pa_t[i][j][1]-3*pa_t[i][j][2]&&Tt[i][j][0][0]<pa_t[i][j][1]+3*pa_t[i][j][2]){
+	    pass+=1;
+	  }
+	}
+      }
+      if(pass==4){
+	adc_tdc_sum_c[i]->Fill(ADCs[i][0],TDCs[i][0][0]+time_sum[i][0]-(time_sum[i][1]/std::sqrt(ADCs[i][0])));
+
 	for(int j=0;j<4;j++)hist_indt[i][j]->Fill(TDCi[i][j][0]);
-	hist_Sumt[i]->Fill(TDCs[i][0][0]);
+	hist_Sumt[i]->Fill(TDCs[i][0][0]+time_sum[i][0]-(time_sum[i][1]/std::sqrt(ADCs[i][0])));
       }
     }
   }
@@ -308,7 +364,8 @@ void analysis(){
   c3->Divide(N);
   for(int i=0;i<N;i++){
     c3->cd(i+1);
-    hist_Sumt[i]->Fit(f_sumt[i],"Q","",600,860);
+    if(i==0||i==N-1)hist_Sumt[i]->Fit(f_sumt[i],"Q","",-100,100);
+    else{hist_Sumt[i]->Fit(f_sumt[i],"Q","",-100,100);}
     f_sumt[i]->GetParameters(pa_sumt[i]);
   }
 
@@ -322,13 +379,15 @@ void analysis(){
     }
   }
 
-	
+ 
 
   Int_t tot_evt[N];
   Int_t pass_evt[N];
   Int_t pass_mul[N];
+  Double_t adc_ind_to;
   
-  
+
+  Double_t tdc_c[N];
   for(int i=0;i<N;i++){
     file3[i]->cd();
     tot_evt[i] = 0;
@@ -342,6 +401,7 @@ void analysis(){
       numpho = 0;
       pass_ind = 0;
       mul_count = 0;
+      adc_ind_to = 0;
       
 	for(int j=0;j<4;j++){
 	  numpho_ind[j] = 0;
@@ -354,8 +414,11 @@ void analysis(){
 	}
 	if(pass==4){
 	  tot_evt[i]+=1;
-	  //if(TDCs[i][0][0]>pa_sumt[i][1]-3*pa_sumt[i][2]&&TDCs[i][0][0]<pa_sumt[i][1]+3*pa_sumt[i][2]){
-	    hist_Suma[i]->Fill((ADCs[i][0]-parameter_pe[4][1])/one_photon);
+	  hist_Suma[i]->Fill((ADCs[i][0]-parameter_pe[4][1])/one_photon);
+	  tdc_c[i] = TDCs[i][0][0]+time_sum[i][0]-(time_sum[i][1]/std::sqrt(ADCs[i][0]));
+	  if(tdc_c[i]>pa_sumt[i][1]-7*pa_sumt[i][2]&&tdc_c[i]<pa_sumt[i][1]+5*pa_sumt[i][2]){
+	    hist_Suma_cut[i]->Fill((ADCs[i][0]-parameter_pe[4][1])/one_photon);
+	    hist_Sumt_cut[i]->Fill(TDCs[i][0][0]+time_sum[i][0]-(time_sum[i][1]/std::sqrt(ADCs[i][0])));
 	    if((ADCs[i][0]-parameter_pe[4][1])/one_photon>0.99)pass_evt[i]+=1;
 	    ADC_sum[i] = (ADCs[i][0]-parameter_pe[4][1])/one_photon;
 	    
@@ -364,12 +427,14 @@ void analysis(){
 	    for(int j=0;j<4;j++){
 	      if(TDCi[i][j][0]>pa_indt[i][j][1]-3*pa_indt[i][j][2]&&TDCi[i][j][0]<pa_indt[i][j][1]+3*pa_indt[i][j][2]){
 		numpho += (ADCi[i][j]-parameter_pe[j][1])/ind_gain[j];
+		adc_ind_to +=ADCi[i][j]-parameter_pe[j][1];
 		numpho_ind[j] = (ADCi[i][j]-parameter_pe[j][1])/ind_gain[j];
 	      }
 	      }
 
 	    hist_inda[i]->Fill(numpho);
-	    ind_sum[i]->Fill(numpho,(ADCs[i][0]-parameter_pe[4][1])/one_photon);
+	    //ind_sum[i]->Fill(numpho,(ADCs[i][0]-parameter_pe[4][1])/one_photon);
+	    ind_sum[i]->Fill(adc_ind_to,ADCs[i][0]-parameter_pe[4][1]);
 	    for(int j=0;j<4;j++)adc_tdc_ind[i][j]->Fill(ADCi[i][j],TDCi[i][j][0]);
 
 	    //multiplicity
@@ -379,7 +444,7 @@ void analysis(){
 	    multi[i]->Fill(mul_count);
 	    if(mul_count>0.99)pass_mul[i]+=1;
 	    
-	    // }
+	    }
 	  
 	
 	  
@@ -399,8 +464,36 @@ for(int i=0;i<N;i++){
   
   
 
+
+ TCanvas *c_2d_sum_c = new TCanvas("c_2d_sum_c","2D histogram of SUM after timewalk correction",800,650);
+  c_2d_sum_c->Divide(N);
+  for(int i=0;i<N;i++){
+    c_2d_sum_c->cd(i+1);
+    adc_tdc_sum_c[i]->Draw("colz");
+
+  }
+  
+ TCanvas *ccut = new TCanvas("ccut","BAC TDC cut compare",800,650);
+  ccut->Divide(N);
+  for(int i=0;i<N;i++){
+      ccut->cd(i+1);
+      gPad->SetLogy();
+      hist_Sumt[i]->SetLineColor(kBlack);
+      hist_Sumt[i]->GetListOfFunctions()->Remove(f_sumt[i]);
+      hist_Sumt[i]->Draw();
+      hist_Sumt_cut[i]->SetLineColor(kRed);
+      hist_Sumt_cut[i]->SetFillColor(kRed);
+      hist_Sumt_cut[i]->SetFillStyle(3001);
+      hist_Sumt_cut[i]->Draw("sames");
+      
+    
+  }
   
 
+
+  
+
+ 
 
 
   TCanvas *c_2d = new TCanvas("c_2d","2D histogram of individual",800,650);
@@ -439,10 +532,20 @@ for(int i=0;i<N;i++){
   for(int i=0;i<N;i++){
     c4->cd(i+1);
     //hist_Suma[i]->Scale(factor,"width");
-    if(i==0)hist_Suma[i]->Fit(f_suma[i],"Q","",-10,10);
-    hist_Suma[i]->Fit(f_suma[i],"Q","",0,100);
-    hist_inda[i]->SetLineColor(kBlack);
-    hist_inda[i]->Draw("same");
+    
+    //hist_inda[i]->SetLineColor(kBlack);
+    //hist_inda[i]->Draw("same");
+    hist_Suma[i]->SetLineColor(kBlack);
+    hist_Suma_cut[i]->Fit(f_suma[i],"Q","",0,100);
+    //hist_Suma[i]->GetListOfFunctions()->Remove(f_suma[i]);
+    hist_Suma[i]->Draw();
+    
+    hist_Suma_cut[i]->SetLineColor(kRed);
+    hist_Suma_cut[i]->SetFillColor(kRed);
+    hist_Suma_cut[i]->SetFillStyle(3001);
+    //if(i==0)hist_Suma_cut[i]->Fit(f_suma[i],"Q","",-10,10);
+    //hist_Suma_cut[i]->Fit(f_suma[i],"Q","",0,100);
+    hist_Suma_cut[i]->Draw("sames");
     f_suma[i]->GetParameters(pa_suma[i]);
     
     xpos[i] = start_pos*10+i*20;
