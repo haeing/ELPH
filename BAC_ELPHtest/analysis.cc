@@ -6,7 +6,8 @@ void analysis(){
 
   //gStyle->SetOptStat(0);
 
-  TFile *file_pe = new TFile("../../ELPH_data/exp_data/run00333.root","read");
+  //TFile *file_pe = new TFile("../../ELPH_data/exp_data/run00333.root","read");
+  TFile *file_pe = new TFile("../../ELPH_data/exp_data/run00283.root","read");
   TTree *data_pe = (TTree*)file_pe->Get("tree");
   Double_t ADC_pe[4];
   Double_t ADCs_pe[1];
@@ -35,11 +36,11 @@ void analysis(){
 
   for(int i=0;i<5;i++){
     if(i<4){
-    hist_pe[i]->Fit(fit_pe[i],"Q","",50,500);
+    hist_pe[i]->Fit(fit_pe[i],"","",50,500);
     fit_pe[i]->GetParameters(parameter_pe[i]);
     }
     if(i==4){
-    hist_sum->Fit(fit_pe_sum,"Q","",50,500);
+    hist_sum->Fit(fit_pe_sum,"","",50,500);
     fit_pe_sum->GetParameters(parameter_pe[4]);
     }
   }
@@ -66,6 +67,7 @@ void analysis(){
   TH1D *hist_Tt_cut[N][4];
   
   TH1D *hist_inda[N];
+  TH1D *hist_inda_se[N][4];
   TH1D *hist_indt[N][4];
   TH1D *hist_Suma[N];
   TH1D *hist_Sumt[N];
@@ -76,6 +78,7 @@ void analysis(){
   TF1 *f_a[N][4];
   TF1 *f_Tt[N][4];
   TF1 *f_inda[N];
+  TF1 *f_inda_se[N][4];
   TF1 *f_indt[N][4];
   TF1 *f_sumt[N];
   TF1 *f_suma[N];
@@ -92,7 +95,7 @@ void analysis(){
   file_po[0] = new TFile("../../ELPH_data/exp_data/run00313.root","read");
   file_po[1] = new TFile("../../ELPH_data/exp_data/run00314.root","read");
   file_po[2] = new TFile("../../ELPH_data/exp_data/run00315.root","read");
-  file_po[3] = new TFile("../../ELPH_data/exp_data/run00296.root","read");
+  file_po[3] = new TFile("../../ELPH_data/exp_data/run00297.root","read");
   file_po[4] = new TFile("../../ELPH_data/exp_data/run00316.root","read");
   file_po[5] = new TFile("../../ELPH_data/exp_data/run00317.root","read");
   file_po[6] = new TFile("../../ELPH_data/exp_data/run00319.root","read");
@@ -123,10 +126,14 @@ void analysis(){
       
       hist_indt[i][j] = new TH1D(Form("hist_indt_%dcm_BAC%d",start_pos+2*i,j+1),Form("hist_indt_%dcm_BAC%d",start_pos+2*i,j+1),200,650,850);
       
+      hist_inda_se[i][j] = new TH1D(Form("hist_inda_se_%dcm_BAC%d",start_pos+2*i,j+1),Form("hist_inda_se_%dcm_BAC%d",start_pos+2*i,j+1),200,-10,60);
+      
       f_a[i][j] = new TF1(Form("f_Tt%da_%dcm",j+4,start_pos+2*i),"landau(0)",200,2000);
       f_Tt[i][j] = new TF1(Form("f_Tt%dt_%dcm",j+4,start_pos+2*i),"gaus(0)",650,730);
 
       f_indt[i][j] = new TF1(Form("f_indt_%dcm_BAC%d",start_pos+2*i,j+1),"gaus(0)",650,850);
+      
+      f_inda_se[i][j] = new TF1(Form("f_inda_se_%dcm_BAC%d",start_pos+2*i,j+1),"landau(0)",-10,60);
 
       adc_tdc_ind[i][j] = new TH2D(Form("adc_tdc_ind_%dcm_BAC%d",start_pos+2*i,j+1),Form("adc_tdc_ind_%dcm_BAC%d",start_pos+2*i,j+1),100,0,2000,100,670,770);
       
@@ -429,6 +436,7 @@ void analysis(){
 		numpho += (ADCi[i][j]-parameter_pe[j][1])/ind_gain[j];
 		adc_ind_to +=ADCi[i][j]-parameter_pe[j][1];
 		numpho_ind[j] = (ADCi[i][j]-parameter_pe[j][1])/ind_gain[j];
+		hist_inda_se[i][j] ->Fill(numpho_ind[j]);
 	      }
 	      }
 
@@ -504,6 +512,16 @@ for(int i=0;i<N;i++){
       adc_tdc_ind[i][j]->Draw("colz");
     }
   }
+
+  TCanvas *c_ind_se = new TCanvas("c_ind_se","ADC histogram of Individual Channel",800,650);
+  c_ind_se->Divide(4,N);
+  for(int i=0;i<N;i++){
+    for(int j=0;j<4;j++){
+      c_ind_se->cd(4*i+j+1);
+      hist_inda_se[i][j]->Draw("colz");
+    }
+  }
+  
   
   TCanvas *ccom = new TCanvas("ccom","compare ind and sum",800,650);
   ccom->Divide(N);
@@ -578,13 +596,13 @@ for(int i=0;i<N;i++){
   TH1D *hist_simul[N];
   TF1 *fit_simul[N];
   
-  file_simul[0] = new TFile("../../ELPH_data/simul_data/elph_221020_m6.5_0_simul.root","read");
-  file_simul[1] = new TFile("../../ELPH_data/simul_data/elph_221020_m4.5_0_simul.root","read");
-  file_simul[2] = new TFile("../../ELPH_data/simul_data/elph_221020_m2.5_0_simul.root","read");
-  file_simul[3] = new TFile("../../ELPH_data/simul_data/elph_221020_m0.5_0_simul.root","read");
-  file_simul[4] = new TFile("../../ELPH_data/simul_data/elph_221020_1.5_0_simul.root","read");
-  file_simul[5] = new TFile("../../ELPH_data/simul_data/elph_221020_3.5_0_simul.root","read");
-  file_simul[6] = new TFile("../../ELPH_data/simul_data/elph_221020_5.5_0_simul.root","read");
+  file_simul[0] = new TFile("../../ELPH_data/simul_data/elph_221020_m6_0_simul.root","read");
+  file_simul[1] = new TFile("../../ELPH_data/simul_data/elph_221020_m4_0_simul.root","read");
+  file_simul[2] = new TFile("../../ELPH_data/simul_data/elph_221020_m2_0_simul.root","read");
+  file_simul[3] = new TFile("../../ELPH_data/simul_data/elph_221020_0_0_simul.root","read");
+  file_simul[4] = new TFile("../../ELPH_data/simul_data/elph_221020_2_0_simul.root","read");
+  file_simul[5] = new TFile("../../ELPH_data/simul_data/elph_221020_4_0_simul.root","read");
+  file_simul[6] = new TFile("../../ELPH_data/simul_data/elph_221020_6_0_simul.root","read");
 
 
   for(int i=0;i<N;i++){
