@@ -49,7 +49,7 @@ void gain_check(){
   TF1* fit_pe[N][16];
   
   for(int i=0;i<N;i++){
-    file_pe[i] = new TFile(Form("LED_modified/BAC%d_pedestal.root",i+1),"read");
+    file_pe[i] = new TFile(Form("../../ELPH_data/LED_modified/BAC%d_pedestal.root",i+1),"read");
     data_pe[i] = (TTree*)file_pe[i]->Get("tree");
     data_pe[i]->SetBranchAddress("ADC",ADC_pe[i]);
     total_pe[i] = data_pe[i]->GetEntries();
@@ -94,7 +94,7 @@ void gain_check(){
   to_min = 100000;
 
   for(int i=0;i<N;i++){
-    file[i] = new TFile(Form("LED_modified/BAC%d_LED.root",i+1),"read");
+    file[i] = new TFile(Form("../../ELPH_data/LED_modified/BAC%d_LED.root",i+1),"read");
     data[i] = (TTree*)file[i]->Get("tree");
     data[i]->SetBranchAddress("ADC",ADC[i]);
     total[i] = data[i]->GetEntries();
@@ -203,7 +203,7 @@ void gain_check(){
   TF1* fit_elph_pe[N][3];
   
   for(int i=0;i<N;i++){
-    file_elph_pe[i] = new TFile(Form("LED_modified/BAC%d_ELPH_pedestal.root",i+1),"read");
+    file_elph_pe[i] = new TFile(Form("../../ELPH_data/LED_modified/BAC%d_ELPH_pedestal.root",i+1),"read");
     data_elph_pe[i] = (TTree*)file_elph_pe[i]->Get("tree");
     data_elph_pe[i]->SetBranchAddress("ADC",ADC_elph_pe[i]);
     total_elph_pe[i] = data_elph_pe[i]->GetEntries();
@@ -248,7 +248,7 @@ void gain_check(){
   to_min = 100000;
 
   for(int i=0;i<N;i++){
-    file_elph[i] = new TFile(Form("LED_modified/BAC%d_ELPH_LED.root",i+1),"read");
+    file_elph[i] = new TFile(Form("../../ELPH_data/LED_modified/BAC%d_ELPH_LED.root",i+1),"read");
     data_elph[i] = (TTree*)file_elph[i]->Get("tree");
     data_elph[i]->SetBranchAddress("ADC",ADC_elph[i]);
     total_elph[i] = data_elph[i]->GetEntries();
