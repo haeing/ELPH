@@ -19,7 +19,7 @@ void analysis(){
 
   TH1D* hist_pe[4];
   TH1D* hist_sum = new TH1D("hist_sum","hist_sum",450,50,500);
-  TH1D* hist_pe_indsum = new TH1D("hist_pe_indsum","hist_pe_indsum",100,-50,50);
+  TH1D* hist_pe_indsum = new TH1D("hist_pe_indsum","hist_pe_indsum",250,700,1200);
   TF1* fit_pe_sum = new TF1("fit_sum","gaus(0)",50,500);
   TF1* fit_pe[4];
   for(int j=0;j<4;j++){
@@ -58,7 +58,8 @@ void analysis(){
     data_pe->GetEntry(n);
     pe_sum = 0;
     for(int i=0;i<4;i++){
-      pe_sum+=ADC_pe[i]-parameter_pe[i][1];
+      //pe_sum+=ADC_pe[i]-parameter_pe[i][1];
+      pe_sum+=ADC_pe[i];
     }
     hist_pe_indsum->Fill(pe_sum);
   }
@@ -505,7 +506,7 @@ void analysis(){
 	    
 	  //tdc_c[i] = TDCs[i][0][0]+time_sum[i][0]-(time_sum[i][1]/std::sqrt(ADCs[i][0]));
 	  //if(tdc_c[i]>pa_sumt[i][1]-7*pa_sumt[i][2]&&tdc_c[i]<pa_sumt[i][1]+5*pa_sumt[i][2]){
-	  if(TDCs[i][0][0]>pa_sumt[i][1]-7*pa_sumt[i][2]&&TDCs[i][0][0]<pa_sumt[i][1]+5*pa_sumt[i][2]){
+	  //if(TDCs[i][0][0]>pa_sumt[i][1]-7*pa_sumt[i][2]&&TDCs[i][0][0]<pa_sumt[i][1]+5*pa_sumt[i][2]){
 	    hist_Suma_cut[i]->Fill((ADCs[i][0]-parameter_pe[4][1])/one_photon);
 	    //hist_Sumt_cut[i]->Fill(TDCs[i][0][0]+time_sum[i][0]-(time_sum[i][1]/std::sqrt(ADCs[i][0])));
 	    hist_Sumt_cut[i]->Fill(TDCs[i][0][0]);
@@ -514,18 +515,18 @@ void analysis(){
 	    ADC_sum[i] = (ADCs[i][0]-parameter_pe[4][1])/one_photon;
 	    
 	    data3[i]->Fill();
-	  }
+	    //}
 
 	  for(int j=0;j<4;j++){
 	    ind_rawadc += ADCi[i][j]-parameter_pe[j][1];
 	    
-	    if(TDCi[i][j][0]>pa_indt[i][j][1]-3*pa_indt[i][j][2]&&TDCi[i][j][0]<pa_indt[i][j][1]+3*pa_indt[i][j][2]){
+	    //if(TDCi[i][j][0]>pa_indt[i][j][1]-3*pa_indt[i][j][2]&&TDCi[i][j][0]<pa_indt[i][j][1]+3*pa_indt[i][j][2]){
 	      numpho += (ADCi[i][j]-parameter_pe[j][1])/ind_gain[j];
 	      adc_ind_to +=ADCi[i][j]-parameter_pe[j][1];
 	      numpho_ind[j] = (ADCi[i][j]-parameter_pe[j][1])/ind_gain[j];
 		//hist_inda_se[i][j] ->Fill(numpho_ind[j]);
 		
-	    }
+	      //}
 	  }
 
 	  hist_inda_com[i]->Fill(ind_rawadc/one_photon_ind);

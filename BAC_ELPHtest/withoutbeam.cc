@@ -3,8 +3,8 @@ void withoutbeam(){
   TFile *file_pe[N];
   TTree *data_pe[N];
   
-  file_pe[0] = new TFile("../../ELPH_data/exp_data/run00079.root","read"); //Before Beam (morning)
-  file_pe[1] = new TFile("../../ELPH_data/exp_data/run00333.root","read"); //After Beam (Night)
+  file_pe[1] = new TFile("../../ELPH_data/exp_data/run00283.root","read"); //Before Beam (morning)
+  file_pe[0] = new TFile("../../ELPH_data/exp_data/run00333.root","read"); //After Beam (Night)
 
   
   Double_t ADC_pe[N][4];
