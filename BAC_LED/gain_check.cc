@@ -168,6 +168,7 @@ void gain_check(){
     //gain[i]->SetMarkerStyle(21+i);
     gain[i]->SetMarkerStyle(24);
     gain[i]->SetMarkerColor(1+i);
+    gain[i]->SetLineColor(1+i);
     gain[i]->SetMarkerSize(0.7);
     average[i] = average[i]/16;
     std::cout<<"BAC"<<i+1<<" gain : "<<average[i]<<std::endl;
@@ -326,9 +327,11 @@ void gain_check(){
     //gain_elph[i]->SetMarkerStyle(21+i);
     gain_elph[i]->SetMarkerStyle(24);
     gain_elph[i]->SetMarkerColor(1+i);
+    gain_elph[i]->SetLineColor(1+i);
     gain_elph[i]->SetMarkerSize(0.7);
     compare[i]->SetMarkerStyle(24);
     compare[i]->SetMarkerColor(1+i);
+    compare[i]->SetLineColor(1+i);
     compare[i]->SetMarkerSize(0.7);
   }
 
