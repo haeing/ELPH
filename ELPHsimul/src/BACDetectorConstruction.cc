@@ -139,7 +139,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   
 
   G4double aerogel1_ep[] = {1.3*eV,7.*eV};
-  G4double aerogel1_abs[] = {50*mm,50*mm};
+  G4double aerogel1_abs[] = {150*mm,150*mm};
   G4double aerogel1_rindex[]={1.167,1.167};
 
   //G4double aerogel_ray[] = {6.16*pow(10,10),6.16*pow(10,10)};
@@ -162,7 +162,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   
 
   G4double aerogel2_ep[] = {1.3*eV,7.*eV};
-  G4double aerogel2_abs[] = {50*mm,50*mm};
+  G4double aerogel2_abs[] = {150*mm,150*mm};
   G4double aerogel2_rindex[]={1.168,1.168};
 
   //G4double aerogel_ray[] = {6.16*pow(10,10),6.16*pow(10,10)};
@@ -185,7 +185,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   
 
   G4double aerogel3_ep[] = {1.3*eV,7.*eV};
-  G4double aerogel3_abs[] = {50*mm,50*mm};
+  G4double aerogel3_abs[] = {150*mm,150*mm};
   G4double aerogel3_rindex[]={1.167,1.167};
 
   //G4double aerogel_ray[] = {6.16*pow(10,10),6.16*pow(10,10)};
@@ -505,7 +505,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   G4double mylar_specularSpike[]={0.87,0.87};
   G4double mylar_backScatter[] = {0,0};
   sp_mylar->AddProperty("EFFICIENCY",mylar_ep1,mylar_effi,2)->SetSpline(true);
-  sp_mylar->AddProperty("REFLECTIVITY",air_ep,mylar_reflec,2)->SetSpline(true);
+  //sp_mylar->AddProperty("REFLECTIVITY",air_ep,mylar_reflec,2)->SetSpline(true);
   sp_mylar->AddProperty("SPECULARLOBECONSTANT",mylar_ep1,mylar_specularLobe,2)->SetSpline(true);
   sp_mylar->AddProperty("SPECULARSPIKECONSTANT",mylar_ep1,mylar_specularSpike,2)->SetSpline(true);
   sp_mylar->AddProperty("BACKSCATTERCONSTANT",mylar_ep1,mylar_backScatter,2)->SetSpline(true);

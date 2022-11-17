@@ -95,7 +95,7 @@ void BACPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   //original 220621
   //G4double y = beam_size*0.5-G4UniformRand()*beam_size*mm;
   G4double y = tight_size_y*0.5-G4UniformRand()*tight_size_y*mm;
-  fParticleGun->SetParticlePosition(G4ThreeVector(x-5.5*cm,y+1*cm-lower,-5*cm) );
+  fParticleGun->SetParticlePosition(G4ThreeVector(x-0*cm,y+1*cm-lower,-5*cm) );
   //fParticleGun->SetParticlePosition(G4ThreeVector(x,y,-5*cm) );
   //fParticleGun -> SetParticleDefinition (particleTable -> FindParticle("opticalphoton"));
   fParticleGun->SetParticleEnergy(energy);

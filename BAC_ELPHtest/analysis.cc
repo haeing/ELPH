@@ -65,9 +65,11 @@ void analysis(){
   }
 
 
+  /*
   TCanvas *c_back = new TCanvas("c_back","Adding background of each channel",800,650);
   c_back->cd();
   hist_pe_indsum->Draw();
+  */
   
 
 
@@ -86,8 +88,8 @@ void analysis(){
   Double_t TDCs[N][1][16];
   Double_t Ta[N][4][1];
   Double_t Tt[N][4][1][16];
-
   Double_t tot[N];
+  
   Double_t min = 100000000;
 
 
@@ -135,7 +137,6 @@ void analysis(){
   Int_t start_pos = -6;
 
   //y=0 mm
-  
   file_po[0] = new TFile("../../ELPH_data/exp_data/run00313.root","read");
   file_po[1] = new TFile("../../ELPH_data/exp_data/run00314.root","read");
   file_po[2] = new TFile("../../ELPH_data/exp_data/run00315.root","read");
@@ -203,7 +204,7 @@ void analysis(){
     }
     hist_Suma[i] = new TH1D(Form("hist_Suma_%dcm",start_pos+2*i),Form("hist_Suma_%dcm",start_pos+2*i),100,-10,60);
     hist_Sumt[i] = new TH1D(Form("hist_Sumt_%dcm",start_pos+2*i),Form("hist_Sumt_%dcm",start_pos+2*i),200,650,850);
-
+    
     hist_Suma_raw[i] = new TH1D(Form("hist_Suma_raw_%dcm",start_pos+2*i),Form("hist_Suma_raw_%dcm",start_pos+2*i),105,-50,1000);
 
     hist_Suma_cut[i] = new TH1D(Form("hist_Suma_%dcm_cut",start_pos+2*i),Form("hist_Suma_%dcm_cut",start_pos+2*i),100,-10,60);
@@ -279,7 +280,7 @@ void analysis(){
       data_po[i]->GetEntry(n);
       pass = 0;
       for(int j=0;j<4;j++){
-	if(Ta[i][j][0]>pa_a[i][j][1]-3*pa_a[i][j][2]&&Ta[i][j][0]<pa_a[i][j][1]+50*pa_a[i][j][2]){
+	if(Ta[i][j][0]>pa_a[i][j][1]-3*pa_a[i][j][2]&&Ta[i][j][0]<3840){
 	  if(Tt[i][j][0][0]>pa_t[i][j][1]-5*pa_t[i][j][2]&&Tt[i][j][0][0]<pa_t[i][j][1]+5*pa_t[i][j][2]){
 	    pass+=1;
 	    
@@ -366,8 +367,8 @@ void analysis(){
   
   
 
-  /*
-  Double_t one_photon= (15.4939+15.753+16.1096+16.0168)*0.945*0.91/4;
+
+  Double_t one_photon= (15.4939+15.753+16.1096+16.0168)*0.945*0.91*0.5/4;
   Double_t one_photon_ind= (15.4939+15.753+16.1096+16.0168)*0.945/4;
   Double_t ind_gain[4];
   ind_gain[0] = 15.4939*0.959;
@@ -375,7 +376,7 @@ void analysis(){
   ind_gain[2] = 16.1096*0.858;
   //ind_gain[3] = 16.0168*0.968*2;
   ind_gain[3] = 16.0168*0.968;
-  */
+  /*  
   //Double_t one_photon= (15.4939+15.753+16.1096+16.0168)*0.858*0.91*0.6/4;
   Double_t one_photon= (15.4939+15.753+16.1096+16.0168)*0.858*0.57*0.91/4;
   Double_t one_photon_ind= (15.4939+15.753+16.1096+16.0168)*0.858/4;
@@ -385,6 +386,7 @@ void analysis(){
   ind_gain[2] = 16.1096*0.858;
   //ind_gain[3] = 16.0168*0.968*2;
   ind_gain[3] = 16.0168*0.858;
+  */
   
   Double_t numpho;
   Double_t numpho_ind[4];
@@ -783,8 +785,10 @@ for(int i=0;i<N;i++){
 
   TGraphErrors *npe0 = new TGraphErrors(N,xpos,npe_pos,x_error,npe_error);
   TGraphErrors *npe2 = new TGraphErrors(N,xpos,npe_pos_ind,x_error,npe_error_ind);
+  /*
   TGraphErrors *npe3 = new TGraphErrors(N,xpos,npe_pos_ind_com,x_error,npe_error_ind_com);
   TGraphErrors *npe4 = new TGraphErrors(N,xpos,npe_pos_fitsum,x_error,npe_pos_fitsum_err);
+  */
   
   TGraphErrors *npe1 = new TGraphErrors(N,xpos,npe_simul_pos,x_error,npe_simul_error);
   npe0->SetMarkerStyle(24);
@@ -801,7 +805,7 @@ for(int i=0;i<N;i++){
   npe2->SetMarkerColor(4);
   npe2->SetLineColor(4);
   npe2->SetMarkerSize(1);
-  
+  /*
   npe3->SetMarkerStyle(24);
   npe3->SetMarkerColor(6);
   npe3->SetLineColor(6);
@@ -811,18 +815,18 @@ for(int i=0;i<N;i++){
   npe4->SetMarkerColor(8);
   npe4->SetLineColor(8);
   npe4->SetMarkerSize(1);
-
+  */
   TMultiGraph *mg = new TMultiGraph();
   TLegend *le_s = new TLegend(0.8,0.5,0.48,0.6);
   mg->Add(npe0);
   mg->Add(npe1);
   mg->Add(npe2);
-  mg->Add(npe3);
-  mg->Add(npe4);
+  //mg->Add(npe3);
+  //mg->Add(npe4);
   le_s->AddEntry(npe0,"ELPH test SUM");
   le_s->AddEntry(npe2,"ELPH test Indi.");
-  le_s->AddEntry(npe3,"ELPH test Indi. 2");
-  le_s->AddEntry(npe4,"ELPH test Indi. 3");
+  //le_s->AddEntry(npe3,"ELPH test Indi. 2");
+  //le_s->AddEntry(npe4,"ELPH test Indi. 3");
   le_s->AddEntry(npe1,"Simulation");
 
   
