@@ -139,23 +139,23 @@ void analysis_2(){
       f_a[i][j] = new TF1(Form("f_a%da_%dcm",j+4,start_pos+2*i),"landau(0)",200,2000);
       f_t[i][j] = new TF1(Form("f_t%dt_%dcm",j+4,start_pos+2*i),"gaus(0)",650,730);
 
-      f_indt[i][j] = new TF1(Form("f_indt_%dcm_BAC%d",start_pos+2*i,j+1),"gaus(0)",650,850);
+      f_indt[i][j] = new TF1(Form("f_indt_%dcm_BAC%d",start_pos+2*i,j+1),"gaus(0)",0,1500);
     }
     
-    hist_inda[i] = new TH1D(Form("hist_inda_%dcm",start_pos+2*i),Form("hist_inda_%dcm",start_pos+2*i),100,-10,60);
-    hist_suma[i] = new TH1D(Form("hist_Suma_%dcm",start_pos+2*i),Form("hist_Suma_%dcm",start_pos+2*i),100,-10,60);
+    hist_inda[i] = new TH1D(Form("hist_inda_%dcm",start_pos+2*i),Form("hist_inda_%dcm",start_pos+2*i),100,-10,100);
+    hist_suma[i] = new TH1D(Form("hist_Suma_%dcm",start_pos+2*i),Form("hist_Suma_%dcm",start_pos+2*i),100,-10,100);
     hist_sumt[i] = new TH1D(Form("hist_Sumt_%dcm",start_pos+2*i),Form("hist_Sumt_%dcm",start_pos+2*i),500,0,1500);
 
-    hist_inda_cut[i] = new TH1D(Form("hist_inda_cut_%dcm",start_pos+2*i),Form("hist_inda_cut_%dcm",start_pos+2*i),100,-10,60);
-    hist_suma_cut[i] = new TH1D(Form("hist_suma_cut_%dcm",start_pos+2*i),Form("hist_suma_cut_%dcm",start_pos+2*i),100,-10,60);
+    hist_inda_cut[i] = new TH1D(Form("hist_inda_cut_%dcm",start_pos+2*i),Form("hist_inda_cut_%dcm",start_pos+2*i),100,-10,100);
+    hist_suma_cut[i] = new TH1D(Form("hist_suma_cut_%dcm",start_pos+2*i),Form("hist_suma_cut_%dcm",start_pos+2*i),100,-10,100);
     hist_sumt_cut[i] = new TH1D(Form("hist_sumt_cut_%dcm",start_pos+2*i),Form("hist_sumt_cut_%dcm",start_pos+2*i),500,0,1500);
 
     ind_sum[i] = new TH2D(Form("ind_sum%d",i),Form("ind_sum%d",i),260,-100,2500,160,-100,1500);
     
 
-    f_inda[i] = new TF1(Form("f_inda_%dcm",start_pos+2*i),"gaus(0)",-10,60);
-    f_sumt[i] = new TF1(Form("f_sumt_%dcm",start_pos+2*i),"gaus(0)",650,850);
-    f_suma[i] = new TF1(Form("f_suma_%dcm",start_pos+2*i),"gaus(0)",-10,60);
+    f_inda[i] = new TF1(Form("f_inda_%dcm",start_pos+2*i),"gaus(0)",-10,100);
+    f_sumt[i] = new TF1(Form("f_sumt_%dcm",start_pos+2*i),"gaus(0)",0,1500);
+    f_suma[i] = new TF1(Form("f_suma_%dcm",start_pos+2*i),"gaus(0)",-10,100);
   }
 
   for(int i=0;i<N;i++){
@@ -295,7 +295,6 @@ void analysis_2(){
   Double_t pa_suma[N][3];
   Double_t pa_inda[N][3];
   for(int i=0;i<N;i++){
-    std::cout<<i<<std::endl;
     c3->cd(i+1);
     hist_suma[i]->SetLineColor(kBlack);
     hist_suma[i]->Fit(f_suma[i],"Q","",-10,60);
@@ -306,6 +305,26 @@ void analysis_2(){
     hist_inda[i]->Fit(f_inda[i],"Q","",-10,60);
     f_inda[i]->GetParameters(pa_inda[i]);
   }
+  c3->Close();
+
+  //Fitting BAC TDC
+  
+  TCanvas *c3_1 = new TCanvas("c3","BAC ADC of Ind and Sum");
+  c3_1->Divide(N);
+  Double_t pa_sumt[N][3];
+  Double_t pa_indt[N][4][3];
+  for(int i=0;i<N;i++){
+    c3_1->cd(i+1);
+    hist_sumt[i]->SetLineColor(kBlack);
+    hist_sumt[i]->Fit(f_sumt[i],"Q","",600,750);
+    f_sumt[i]->GetParameters(pa_sumt[i]);
+    //c3_1->Close();
+    for(int j=0;j<4;j++){
+      hist_indt[i][j]->Fit(f_indt[i][j],"Q","",0,1500);
+      f_indt[i][j]->GetParameters(pa_indt[i][j]);
+    }
+  }
+
 
   
   TCanvas *c4 = new TCanvas("c4","ADC of Ind channel and Sum channel",800,650);
@@ -347,10 +366,12 @@ void analysis_2(){
 	tot_evt[i]+=1;
 	if(ADCs[i][0]<3840){
 	  numpho_sum = (ADCs[i][0]-parameter_pe[4][1])/one_photon;
-	  if(numpho_sum>0.5){
-	    evt_suma[i]+=1;
-	    hist_suma_cut[i]->Fill(numpho_sum);
-	    hist_sumt_cut[i]->Fill(TDCs[i][0][0]);
+	  if(numpho_sum>2){
+	    if(TDCs[i][0][0]>pa_sumt[i][1]-5*pa_sumt[i][2]&&TDCs[i][0][0]<pa_sumt[i][1]+5*pa_sumt[i][2]){
+	      evt_suma[i]+=1;
+	      hist_suma_cut[i]->Fill(numpho_sum);
+	      hist_sumt_cut[i]->Fill(TDCs[i][0][0]);
+	    }
 	  }
 	}
 	
@@ -359,7 +380,7 @@ void analysis_2(){
 	  numpho += (ADCi[i][j]-parameter_pe[j][1])/ind_gain[j];
 	}
 	if(pass_inda==4){
-	  if(numpho>0.5){
+	  if(numpho>2){
 	    evt_inda[i]+=1;
 	    hist_inda_cut[i]->Fill(numpho);
 	    for(int j=0;j<4;j++){
@@ -391,6 +412,7 @@ void analysis_2(){
   c6->Divide(N);
   for(int i=0;i<N;i++){
     c6->cd(i+1);
+    gPad->SetLogy();
     hist_sumt[i]->SetLineColor(kBlack);
     hist_sumt[i]->SetTitle(Form("Sum TDC %d cm;TDC [Ch.];n",start_pos+i*2));
     hist_sumt[i]->Draw();
@@ -421,6 +443,7 @@ void analysis_2(){
   for(int i=0;i<N;i++){
     for(int j=0;j<4;j++){
       c8->cd(4*i+j+1);
+      gPad->SetLogy();
       hist_indt[i][j]->SetLineColor(kBlack);
       hist_indt[i][j]->SetTitle(Form("Ind TDC %d cm;TDC [Ch.];n",start_pos+i*2));
       hist_indt[i][j]->Draw();
@@ -431,6 +454,31 @@ void analysis_2(){
       hist_indt_cut[i][j]->Draw("sames");
     }
   }
+
+
+  //Efficiency
+  Double_t x_pos[N];
+  Double_t effi_suma[N];
+  Double_t effi_inda[N];
+  for(int i=0;i<N;i++){
+    x_pos[i] = start_pos+2*i;
+    effi_suma[i] = 1.0*evt_suma[i]/tot_evt[i];
+    effi_inda[i] = 1.0*evt_inda[i]/tot_evt[i];
+      
+    
+  }
+
+  TGraph *eff_sum = new TGraph(N,x_pos,effi_suma);
+  eff_sum ->SetMarkerStyle(24);
+  eff_sum ->SetMarkerColor(kBlack);
+  TGraph *eff_ind = new TGraph(N,x_pos,effi_inda);
+  eff_ind ->SetMarkerStyle(24);
+  eff_ind ->SetMarkerColor(kBlue);
+  auto mg = new TMultiGraph();
+  mg->Add(eff_sum);
+  mg->Add(eff_ind);
+  TCanvas *c9 = new TCanvas("c9","Efficiency");
+  eff_sum->Draw("AP");
 
   
 		      

@@ -676,7 +676,8 @@ for(int i=0;i<N;i++){
     
     xpos[i] = start_pos*10+i*20;
     x_error[i] = 0.5;
-    npe_pos[i] = pa_suma[i][1];
+    if(pa_suma[i][1]>=0)npe_pos[i] = pa_suma[i][1];
+    else if(pa_suma[i][1]<0)npe_pos[i] = 0;
     npe_error[i] = f_suma[i]->GetParError(1);
   }
 
@@ -691,7 +692,8 @@ for(int i=0;i<N;i++){
     hist_inda[i]->Fit(f_inda[i],"Q","",-10,60);
     f_inda[i]->GetParameters(pa_inda[i]);
     
-    npe_pos_ind[i] = pa_inda[i][1];
+    if(pa_inda[i][1]>=0)npe_pos_ind[i] = pa_inda[i][1];
+    else if(pa_inda[i][1]<0)npe_pos_ind[i] = 0;
     npe_error_ind[i] = f_inda[i]->GetParError(1);
   }
 
@@ -819,7 +821,7 @@ for(int i=0;i<N;i++){
   TMultiGraph *mg = new TMultiGraph();
   TLegend *le_s = new TLegend(0.8,0.5,0.48,0.6);
   mg->Add(npe0);
-  mg->Add(npe1);
+  //mg->Add(npe1);
   mg->Add(npe2);
   //mg->Add(npe3);
   //mg->Add(npe4);
@@ -827,7 +829,7 @@ for(int i=0;i<N;i++){
   le_s->AddEntry(npe2,"ELPH test Indi.");
   //le_s->AddEntry(npe3,"ELPH test Indi. 2");
   //le_s->AddEntry(npe4,"ELPH test Indi. 3");
-  le_s->AddEntry(npe1,"Simulation");
+  //le_s->AddEntry(npe1,"Simulation");
 
   
 
