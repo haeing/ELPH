@@ -50,9 +50,9 @@ int main(int argc,char** argv)
     //std::cout<<"Please enter the version"<<std::endl;
     ui = new G4UIExecutive(argc, argv);
     histname = "geant4_test.root";
-    par1_put ="1";
-    par2_put = "2";
-    par3_put = "3";
+    par1_put ="0";
+    par2_put = "0";
+    par3_put = "150";
     
   }
 
@@ -92,7 +92,14 @@ int main(int argc,char** argv)
   // Set mandatory initialization classes
   //
   // Detector construction
-  runManager->SetUserInitialization(new BACDetectorConstruction(par1_put,par2_put,par3_put));
+  runManager->SetUserInitialization(new BACDetectorConstruction(par3_put));
+
+
+
+
+
+
+
   
 
   // Physics list
@@ -112,7 +119,8 @@ int main(int argc,char** argv)
   runManager->SetUserInitialization(physicsList);
 
   BACAnalysisManager *anaMan = new BACAnalysisManager(histname);
-  BACPrimaryGeneratorAction *priGen = new BACPrimaryGeneratorAction();
+  //BACPrimaryGeneratorAction *priGen = new BACPrimaryGeneratorAction();
+  BACPrimaryGeneratorAction *priGen = new BACPrimaryGeneratorAction(par1_put,par2_put);
   BACRunAction *runAction = new BACRunAction(anaMan);
   BACEventAction *eventAction = new BACEventAction(anaMan);
   BACStackingAction *stackAction = new BACStackingAction();

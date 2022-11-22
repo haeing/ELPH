@@ -31,10 +31,13 @@
 #include "G4RotationMatrix.hh"
 
 
-BACDetectorConstruction::BACDetectorConstruction(const G4String &par1,const G4String &par2,const G4String &par3)
-  : G4VUserDetectorConstruction(),parameter1(par1), parameter2(par2), parameter3(par3)
+BACDetectorConstruction::BACDetectorConstruction(const G4String &par3)
+  : G4VUserDetectorConstruction(),parameter3(par3)
 {
 }
+
+
+
 
 BACDetectorConstruction::~BACDetectorConstruction()
 {
@@ -55,9 +58,8 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
 
 
 
-  pa1 = std::stod(parameter1);
-  pa2 = std::stod(parameter2);
   pa3 = std::stod(parameter3);
+  G4double att = pa3*mm;
 
 
 
@@ -136,10 +138,14 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   //Aerogel1 Property------------------------------------------------------
   G4MaterialPropertiesTable* prop_aerogel1 = new G4MaterialPropertiesTable();
 
-  
+
+  G4double factor = 8;
 
   G4double aerogel1_ep[] = {1.3*eV,7.*eV};
-  G4double aerogel1_abs[] = {150*mm,150*mm};
+  G4double aerogel_ep[] = {1.3*eV,1.56*eV,1.68*eV,1.84*eV,2.06*eV,2.26*eV,2.54*eV,2.90*eV,3.10*eV,3.28*eV,3.94*eV,4.94*eV,7.0*eV};
+  
+  G4double aerogel1_abs[] = {500*mm,128*mm,120*mm,97*mm,77*mm,59*mm,41*mm,26*mm,20*mm,17*mm,8*mm,4*mm,1*mm};
+  for(int i=0;i<13;i++)aerogel1_abs[i]*=factor;
   G4double aerogel1_rindex[]={1.167,1.167};
 
   //G4double aerogel_ray[] = {6.16*pow(10,10),6.16*pow(10,10)};
@@ -147,7 +153,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   assert(sizeof(aerogel1_ep_abs)==sizeof(aerogel1_abs));
   
   prop_aerogel1->AddProperty("RINDEX",aerogel1_ep,aerogel1_rindex,2)->SetSpline(true);
-  prop_aerogel1->AddProperty("ABSLENGTH",aerogel1_ep,aerogel1_abs,2)->SetSpline(true);
+  prop_aerogel1->AddProperty("ABSLENGTH",aerogel_ep,aerogel1_abs,13)->SetSpline(true);
   //prop_aerogel1->AddProperty("RAYLEIGH",aerogel_ep,aerogel_ray,2)->SetSpline(true);
 
   prop_aerogel1->AddConstProperty("RESOLUTIONSCALE",1.0);
@@ -162,7 +168,8 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   
 
   G4double aerogel2_ep[] = {1.3*eV,7.*eV};
-  G4double aerogel2_abs[] = {150*mm,150*mm};
+  G4double aerogel2_abs[] = {500*mm,130*mm,122*mm,99*mm,78*mm,60*mm,42*mm,27*mm,21*mm,17*mm,8*mm,4*mm,1*mm};
+  for(int i=0;i<13;i++)aerogel2_abs[i]*=factor;
   G4double aerogel2_rindex[]={1.168,1.168};
 
   //G4double aerogel_ray[] = {6.16*pow(10,10),6.16*pow(10,10)};
@@ -170,7 +177,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   assert(sizeof(aerogel2_ep_abs)==sizeof(aerogel2_abs));
   
   prop_aerogel2->AddProperty("RINDEX",aerogel2_ep,aerogel2_rindex,2)->SetSpline(true);
-  prop_aerogel2->AddProperty("ABSLENGTH",aerogel2_ep,aerogel2_abs,2)->SetSpline(true);
+  prop_aerogel2->AddProperty("ABSLENGTH",aerogel_ep,aerogel2_abs,13)->SetSpline(true);
   //prop_aerogel1->AddProperty("RAYLEIGH",aerogel_ep,aerogel_ray,2)->SetSpline(true);
 
   prop_aerogel2->AddConstProperty("RESOLUTIONSCALE",1.0);
@@ -185,7 +192,8 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   
 
   G4double aerogel3_ep[] = {1.3*eV,7.*eV};
-  G4double aerogel3_abs[] = {150*mm,150*mm};
+  G4double aerogel3_abs[] = {500*mm,122*mm,115*mm,93*mm,73*mm,57*mm,39*mm,25*mm,19*mm,16*mm,8*mm,4*mm,1*mm};
+  for(int i=0;i<13;i++)aerogel3_abs[i]*=factor;
   G4double aerogel3_rindex[]={1.167,1.167};
 
   //G4double aerogel_ray[] = {6.16*pow(10,10),6.16*pow(10,10)};
@@ -193,7 +201,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   assert(sizeof(aerogel3_ep_abs)==sizeof(aerogel3_abs));
   
   prop_aerogel3->AddProperty("RINDEX",aerogel3_ep,aerogel3_rindex,2)->SetSpline(true);
-  prop_aerogel3->AddProperty("ABSLENGTH",aerogel3_ep,aerogel3_abs,2)->SetSpline(true);
+  prop_aerogel3->AddProperty("ABSLENGTH",aerogel_ep,aerogel3_abs,13)->SetSpline(true);
   //prop_aerogel3->AddProperty("RAYLEIGH",aerogel_ep,aerogel_ray,2)->SetSpline(true);
 
   prop_aerogel3->AddConstProperty("RESOLUTIONSCALE",1.0);
@@ -221,7 +229,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   G4double mylar_real[]={2.2802,2.6945,2.7668,2.7675,2.6154,2.1606,1.8301,1.5724,1.366,1.0728,0.8734,0.7278,0.6079,0.52135,0.39877,0.31474,0.28003,0.18137,0.12677,0.094236};
   G4double mylar_ima[]={8.1134,8.1878,8.2573,8.3866,8.4914,8.3565,8.0601,7.7354,7.4052,6.7839,6.2418,5.7781,5.3676,5.0008,4.3957,3.9165,3.7081,2.9029,2.3563,1.9519};
 
-  G4double mylar_ep1[] = {1.3*eV,7.*eV};
+  G4double mylar_ep1[] = {1.24*eV,7.*eV};
 
   assert (sizeof(mylar_ep) == sizeof(mylar_real));
   assert (sizeof(mylar_ep) == sizeof(mylar_ima));
@@ -329,7 +337,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
 
   G4Box *Bottom = new G4Box("Bottom",Aerox_real/2,1*mm,Aeroz_real/2);
   BottomLW = new G4LogicalVolume(Bottom,Mylar,"Bottom");
-  new G4PVPlacement(0,G4ThreeVector(0,-Aeroy_real/2+10*mm-5*mm-1*mm,5*mm),BottomLW,"Bottom",logicWorld,false,0,checkOverlaps);
+  new G4PVPlacement(0,G4ThreeVector(0,-Aeroy_real/2+10*mm-5*mm-1*mm-lower,5*mm),BottomLW,"Bottom",logicWorld,false,0,checkOverlaps);
 
   
   //Aerogel Holder
@@ -469,7 +477,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   G4OpticalSurface* surface_bs = new G4OpticalSurface("surface_bs");
   surface_bs->SetType(dielectric_dielectric);
   surface_bs->SetModel(unified);
-  surface_bs->SetFinish(polishedtyvekair);
+  surface_bs->SetFinish(groundtyvekair);
 
   G4MaterialPropertiesTable* sp_bs = new G4MaterialPropertiesTable();
 
@@ -499,10 +507,12 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   surface_mylar->SetModel(unified);
   
   G4MaterialPropertiesTable* sp_mylar = new G4MaterialPropertiesTable();
-  G4double mylar_reflec[] = {0.80,0.80};  //for metal, reflectivity is calculated using rindex, they use polarization, angle, energy
-  G4double mylar_effi[] = {0.0,0.0};
-  G4double mylar_specularLobe[] = {0.85,0.85};
-  G4double mylar_specularSpike[]={0.87,0.87};
+  G4double mylar_reflec[] = {0.98,0.98};  //for metal, reflectivity is calculated using rindex, they use polarization, angle, energy
+  G4double mylar_effi[] = {1.0,1.0};
+  //G4double mylar_specularLobe[] = {0.85,0.85};
+  //G4double mylar_specularSpike[]={0.87,0.87};
+  G4double mylar_specularLobe[] = {0.3,0.3};
+  G4double mylar_specularSpike[]={0.7,0.7};
   G4double mylar_backScatter[] = {0,0};
   sp_mylar->AddProperty("EFFICIENCY",mylar_ep1,mylar_effi,2)->SetSpline(true);
   //sp_mylar->AddProperty("REFLECTIVITY",air_ep,mylar_reflec,2)->SetSpline(true);
@@ -511,11 +521,8 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   sp_mylar->AddProperty("BACKSCATTERCONSTANT",mylar_ep1,mylar_backScatter,2)->SetSpline(true);
   surface_mylar->SetMaterialPropertiesTable(sp_mylar);
   
-  //new G4LogicalSkinSurface("mylar_surface",TrdLW,surface_mylar);
-
 
   new G4LogicalSkinSurface("mylar_surface",ReflectLW,surface_mylar);
-  
   new G4LogicalSkinSurface("mylar_surface",SideLW,surface_mylar);
   new G4LogicalSkinSurface("mylar_surface",BottomLW,surface_mylar);
   new G4LogicalSkinSurface("mylar_surface",BehindLW,surface_mylar);

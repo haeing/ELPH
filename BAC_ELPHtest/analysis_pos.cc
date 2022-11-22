@@ -1,6 +1,6 @@
 //Y position : -35 -23 -11 -10 0
 
-Int_t y_pos = -11;
+Int_t y_pos = 0;
 
 void analysis_pos(){
 
@@ -16,7 +16,7 @@ void analysis_pos(){
   else if(y_pos ==-23)N=7;
   else if(y_pos ==-35)N=11;
   
-
+  Int_t att = 1;
   
 
   //Pedestal
@@ -62,7 +62,7 @@ void analysis_pos(){
   }
 
   Int_t x_pos[N];
-  if(y_pos == 0 || y_pos == -11){
+  if(y_pos == 0 || y_pos == -11 || y_pos ==-23){
     for(int i=0;i<N;i++)x_pos[i] = -6+2*i;
   }
   else if(y_pos ==-10){
@@ -85,12 +85,19 @@ void analysis_pos(){
   Int_t start_pos = -6;
   TFile *file_po[N];
   TTree *data_po[N];
+
+ 
   Double_t ADCi[N][4];
   Double_t TDCi[N][4][16];
   Double_t ADCs[N][1];
   Double_t TDCs[N][1][16];
   Double_t Ta[N][4][1];
   Double_t Tt[N][4][1][16];
+
+  TFile *file_simul[N][att];
+  TTree *data_simul[N][att];
+
+  Int_t nhmppc[N][4];
 
   Double_t tot[N];
 
@@ -103,6 +110,8 @@ void analysis_pos(){
 
   TH1D *hist_inda[N];
   TH1D *hist_suma[N];
+
+  TH1D *hist_simul[N][att];
 
   TH1D *hist_inda_cut[N];
   TH1D *hist_suma_cut[N];
@@ -121,8 +130,12 @@ void analysis_pos(){
   TF1 *f_inda[N];
   TF1 *f_suma[N];
 
+  TF1 *f_simul[N][att];
+
   TF1 *f_indt[N][4];
   TF1 *f_sumt[N];
+
+  Int_t att_start = 400;
 
   if(y_pos==0){
     file_po[0] = new TFile("../../ELPH_data/exp_data/run00313.root","read");
@@ -132,6 +145,12 @@ void analysis_pos(){
     file_po[4] = new TFile("../../ELPH_data/exp_data/run00316.root","read");
     file_po[5] = new TFile("../../ELPH_data/exp_data/run00317.root","read");
     file_po[6] = new TFile("../../ELPH_data/exp_data/run00319.root","read");
+
+    for(int i=0;i<N;i++){
+      for(int j=0;j<att;j++){
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_cal_att/elph_221020_%dmm_0mm.root",x_pos[i]*10),"read");
+      }
+    }
   }
 
 
@@ -139,6 +158,12 @@ void analysis_pos(){
     file_po[0] = new TFile("../../ELPH_data/exp_data/run00300.root","read");
     file_po[1] = new TFile("../../ELPH_data/exp_data/run00299.root","read");
     file_po[2] = new TFile("../../ELPH_data/exp_data/run00301.root","read");
+
+    for(int i=0;i<N;i++){
+      for(int j=0;j<att;j++){
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_att/elph_221020_%dmm_-10mm_att_%d.root",x_pos[i]*10,att_start+50*j),"read");
+      }
+    }
   }
   
 
@@ -150,6 +175,12 @@ void analysis_pos(){
     file_po[4] = new TFile("../../ELPH_data/exp_data/run00061.root","read");
     file_po[5] = new TFile("../../ELPH_data/exp_data/run00060.root","read");
     file_po[6] = new TFile("../../ELPH_data/exp_data/run00059.root","read");
+
+    for(int i=0;i<N;i++){
+      for(int j=0;j<att;j++){
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_att/elph_221018_%dmm_-11mm_att_%d.root",x_pos[i]*10,att_start+50*j),"read");
+      }
+    }
   }
   
 
@@ -161,6 +192,12 @@ void analysis_pos(){
     file_po[4] = new TFile("../../ELPH_data/exp_data/run00054.root","read");
     file_po[5] = new TFile("../../ELPH_data/exp_data/run00055.root","read");
     file_po[6] = new TFile("../../ELPH_data/exp_data/run00056.root","read");
+
+    for(int i=0;i<N;i++){
+      for(int j=0;j<att;j++){
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_att/elph_221018_%dmm_-23mm_att_%d.root",x_pos[i]*10,att_start+50*j),"read");
+      }
+    }
   }
 
   else if(y_pos==-35){
@@ -175,7 +212,14 @@ void analysis_pos(){
     file_po[8] = new TFile("../../ELPH_data/exp_data/run00073.root","read");
     file_po[9] = new TFile("../../ELPH_data/exp_data/run00075.root","read");
     file_po[10] = new TFile("../../ELPH_data/exp_data/run00074.root","read");
+
+    for(int i=0;i<N;i++){
+      for(int j=0;j<att;j++){
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_att/elph_221018_%dmm_-35mm_att_%d.root",x_pos[i]*10,att_start+50*j),"read");
+      }
+    }
   }
+
 
 
   for(int i=0;i<N;i++){
@@ -196,15 +240,15 @@ void analysis_pos(){
     tot[i] = data_po[i]->GetEntries();
 
     for(int j=0;j<4;j++){
-      hist_Ta[i][j] = new TH1D(Form("hist_T%da_%dcm",j+4,start_pos+2*i),Form("hist_T%da_%dcm",j+4,x_pos[i]),450,0,2000);
-      hist_Tt[i][j] = new TH1D(Form("hist_T%dt_%dcm",j+4,start_pos+2*i),Form("hist_T%dt_%dcm",j+4,x_pos[i]),250,600,850);
+      hist_Ta[i][j] = new TH1D(Form("hist_T%da_%dcm",j+4,x_pos[i]),Form("hist_T%da_%dcm",j+4,x_pos[i]),450,0,2000);
+      hist_Tt[i][j] = new TH1D(Form("hist_T%dt_%dcm",j+4,x_pos[i]),Form("hist_T%dt_%dcm",j+4,x_pos[i]),250,600,850);
 
-      hist_Ta_cut[i][j] = new TH1D(Form("hist_T%da_%dcm_cut",j+4,start_pos+2*i),Form("hist_T%da_%dcm_cut",j+4,x_pos[i]),450,0,2000);
-      hist_Tt_cut[i][j] = new TH1D(Form("hist_T%dt_%dcm_cut",j+4,start_pos+2*i),Form("hist_T%dt_%dcm_cut",j+4,x_pos[i]),250,600,850);
+      hist_Ta_cut[i][j] = new TH1D(Form("hist_T%da_%dcm_cut",j+4,x_pos[i]),Form("hist_T%da_%dcm_cut",j+4,x_pos[i]),450,0,2000);
+      hist_Tt_cut[i][j] = new TH1D(Form("hist_T%dt_%dcm_cut",j+4,x_pos[i]),Form("hist_T%dt_%dcm_cut",j+4,x_pos[i]),250,600,850);
 
-      hist_indt[i][j] = new TH1D(Form("hist_indt_%dcm_BAC%d",start_pos+2*i,j+1),Form("hist_indt_%dcm_BAC%d",x_pos[i],j+1),500,0,1500);
+      hist_indt[i][j] = new TH1D(Form("hist_indt_%dcm_BAC%d",x_pos[i],j+1),Form("hist_indt_%dcm_BAC%d",x_pos[i],j+1),500,0,1500);
 
-      hist_indt_cut[i][j] = new TH1D(Form("hist_indt_cut_%dcm_BAC%d",start_pos+2*i,j+1),Form("hist_indt_cut_%dcm_BAC%d",x_pos[i],j+1),500,0,1500);
+      hist_indt_cut[i][j] = new TH1D(Form("hist_indt_cut_%dcm_BAC%d",x_pos[i],j+1),Form("hist_indt_cut_%dcm_BAC%d",x_pos[i],j+1),500,0,1500);
       
       f_a[i][j] = new TF1(Form("f_a%da_%dcm",j+4,x_pos[i]),"landau(0)",200,2000);
       f_t[i][j] = new TF1(Form("f_t%dt_%dcm",j+4,x_pos[i]),"gaus(0)",650,730);
@@ -215,6 +259,9 @@ void analysis_pos(){
     hist_inda[i] = new TH1D(Form("hist_inda_%dcm",x_pos[i]),Form("hist_inda_%dcm",x_pos[i]),100,-10,100);
     hist_suma[i] = new TH1D(Form("hist_Suma_%dcm",x_pos[i]),Form("hist_Suma_%dcm",x_pos[i]),100,-10,100);
     hist_sumt[i] = new TH1D(Form("hist_Sumt_%dcm",x_pos[i]),Form("hist_Sumt_%dcm",x_pos[i]),500,0,1500);
+    for(int j=0;j<att;j++){
+      hist_simul[i][j] = new TH1D(Form("hist_simul_%dcm_%d",x_pos[i],att_start+50*j),Form("hist_simul_%dcm",x_pos[i]),100,-10,80);
+    }
 
     hist_inda_cut[i] = new TH1D(Form("hist_inda_cut_%dcm",x_pos[i]),Form("hist_inda_cut_%dcm",x_pos[i]),100,-10,100);
     hist_suma_cut[i] = new TH1D(Form("hist_suma_cut_%dcm",x_pos[i]),Form("hist_suma_cut_%dcm",x_pos[i]),100,-10,100);
@@ -226,6 +273,10 @@ void analysis_pos(){
     f_inda[i] = new TF1(Form("f_inda_%dcm",x_pos[i]),"gaus(0)",-10,100);
     f_sumt[i] = new TF1(Form("f_sumt_%dcm",x_pos[i]),"gaus(0)",0,1500);
     f_suma[i] = new TF1(Form("f_suma_%dcm",x_pos[i]),"gaus(0)",-10,100);
+
+    for(int j=0;j<att;j++){
+      f_simul[i][j] = new TF1(Form("f_simul_%dcm_%d",x_pos[i],att_start+j*50),"gaus(0)",-10,100);
+    }
   }
 
   for(int i=0;i<N;i++){
@@ -318,7 +369,7 @@ void analysis_pos(){
     }
   }
 
-  Double_t one_photon= (15.4939+15.753+16.1096+16.0168)*0.945*0.91*0.5/4;
+  Double_t one_photon= (15.4939+15.753+16.1096+16.0168)*0.945*0.5/4;
   Double_t one_photon_ind= (15.4939+15.753+16.1096+16.0168)*0.945/4;
   Double_t ind_gain[4];
   ind_gain[0] = 15.4939*0.959;
@@ -379,7 +430,7 @@ void analysis_pos(){
 
   //Fitting BAC TDC
   
-  TCanvas *c3_1 = new TCanvas("c3","BAC ADC of Ind and Sum");
+  TCanvas *c3_1 = new TCanvas("c3_1","BAC TDC of Ind and Sum");
   c3_1->Divide(N);
   Double_t pa_sumt[N][3];
   Double_t pa_indt[N][4][3];
@@ -471,7 +522,7 @@ void analysis_pos(){
     c5->cd(i+1);
     hist_suma[i]->SetLineColor(kBlack);
     hist_suma[i]->GetListOfFunctions()->Remove(f_suma[i]);
-    hist_suma[i]->SetTitle(Form("Sum ADC %d cm;ADC [Ch.];n",start_pos+i*2));
+    hist_suma[i]->SetTitle(Form("Sum ADC %d cm;ADC [Ch.];n",x_pos[i]));
     hist_suma[i]->Draw();
     
     hist_suma_cut[i]->SetLineColor(kRed);
@@ -486,7 +537,7 @@ void analysis_pos(){
     c6->cd(i+1);
     gPad->SetLogy();
     hist_sumt[i]->SetLineColor(kBlack);
-    hist_sumt[i]->SetTitle(Form("Sum TDC %d cm;TDC [Ch.];n",start_pos+i*2));
+    hist_sumt[i]->SetTitle(Form("Sum TDC %d cm;TDC [Ch.];n",x_pos[i]));
     hist_sumt[i]->Draw();
     
     hist_sumt_cut[i]->SetLineColor(kRed);
@@ -501,7 +552,7 @@ void analysis_pos(){
     c7->cd(i+1);
     hist_inda[i]->SetLineColor(kBlack);
     hist_inda[i]->GetListOfFunctions()->Remove(f_inda[i]);
-    hist_inda[i]->SetTitle(Form("Ind ADC %d cm;ADC [Ch.];n",start_pos+i*2));
+    hist_inda[i]->SetTitle(Form("Ind ADC %d cm;ADC [Ch.];n",x_pos[i]));
     hist_inda[i]->Draw();
     
     hist_inda_cut[i]->SetLineColor(kRed);
@@ -517,7 +568,7 @@ void analysis_pos(){
       c8->cd(4*i+j+1);
       gPad->SetLogy();
       hist_indt[i][j]->SetLineColor(kBlack);
-      hist_indt[i][j]->SetTitle(Form("Ind TDC %d cm;TDC [Ch.];n",start_pos+i*2));
+      hist_indt[i][j]->SetTitle(Form("Ind TDC %d cm;TDC [Ch.];n",x_pos[i]));
       hist_indt[i][j]->Draw();
       
       hist_indt_cut[i][j]->SetLineColor(kRed);
@@ -527,18 +578,100 @@ void analysis_pos(){
     }
   }
 
+  
+  
+  
+
 
   //Efficiency
   Double_t x_pos_e[N];
+  Double_t x_error[N];
   Double_t effi_suma[N];
   Double_t effi_inda[N];
+  Double_t npe_pos[N];
+  Double_t npe_error[N];
   for(int i=0;i<N;i++){
     x_pos_e[i] = x_pos[i]*1.0;
     effi_suma[i] = 1.0*evt_suma[i]/tot_evt[i];
     effi_inda[i] = 1.0*evt_inda[i]/tot_evt[i];
-      
-    
+    if(pa_suma[i][1]>=0)npe_pos[i] = pa_suma[i][1];
+    else if(pa_suma[i][1]<0)npe_pos[i] = 0;
+    npe_error[i] = f_suma[i]->GetParError(1);
+    x_error[i] = 0.05;
   }
+
+  
+
+  //Npe simulation & experiment
+  for(int i=0;i<N;i++){
+    for(int j=0;j<att;j++){
+      data_simul[i][j] = (TTree*)file_simul[i][j]->Get("tree");
+      data_simul[i][j] ->SetBranchAddress("nhMppc",&nhmppc[i][j]);
+    }
+  }
+
+  for(int i=0;i<N;i++){
+    for(int j=0;j<att;j++){
+      for(int n=0;n<10000;n++){
+	data_simul[i][j]->GetEntry(n);
+	hist_simul[i][j]->Fill(nhmppc[i][j]);
+      }
+    }
+  }
+
+  Double_t pa_simul[N][att][3];
+  Double_t npe_pos_simul[att][N];
+  Double_t npe_error_simul[att][N];
+  TCanvas *c9 = new TCanvas("c9","BAC npe simulation",800,650);
+  c9->Divide(N,att);
+  for(int i=0;i<N;i++){
+    for(int j=0;j<att;j++){
+      c9->cd(att*i+j+1);
+      hist_simul[i][j]->SetTitle(Form("Sum ADC %d cm %d;ADC [Ch.];n",x_pos[i],att_start+50*j));
+      hist_simul[i][j]->Fit(f_simul[i][j],"","",-10,80);
+
+      f_simul[i][j]->GetParameters(pa_simul[i][j]);
+      if(pa_simul[i][j][1]>=0)npe_pos_simul[j][i] = pa_simul[i][j][1];
+      //if(pa_simul[i][j][1]>=0)npe_pos_simul[j][i] = TMath::Abs(pa_simul[i][j][1]-pa_suma[i][1])/pa_suma[i][1];
+      else if(pa_simul[i][j][1]<0)npe_pos_simul[j][i]=0;
+      npe_error_simul[j][i] = f_simul[i][j]->GetParError(1);
+    }
+  }
+  
+  
+  TGraphErrors *npe0 = new TGraphErrors(N,x_pos_e,npe_pos,x_error,npe_error);
+  TGraphErrors *npe[att];
+  for(int i=0;i<att;i++){
+    npe[i] = new TGraphErrors(N,x_pos_e,npe_pos_simul[i],x_error,npe_error_simul[i]);
+    npe[i]->SetMarkerStyle(24);
+    npe[i]->SetMarkerColor(2+i);
+    npe[i]->SetLineColor(2+i);
+    npe[i]->SetMarkerSize(1);
+  }
+  
+  npe0->SetMarkerStyle(24);
+  npe0->SetMarkerColor(1);
+  npe0->SetLineColor(1);
+  npe0->SetMarkerSize(1);
+
+  auto mg_npe = new TMultiGraph();
+  mg_npe->Add(npe0);
+  for(int i=0;i<att;i++){
+    mg_npe->Add(npe[i]);
+  }
+
+  TLegend *le_s = new TLegend(0.8,0.5,0.48,0.6);
+  le_s->AddEntry(npe0,"ELPH SUM result");
+  for(int i=0;i<att;i++){
+    le_s->AddEntry(npe[i],Form("Simulation att %d mm",att_start+i*50));
+  }
+  
+  TCanvas *c10 = new TCanvas("c10","Npe");
+  c10->cd();
+  mg_npe->SetTitle("Npe per each position;X [cm];Npe");
+  mg_npe->Draw("AP");
+  le_s->Draw();
+  
 
   TGraph *eff_sum = new TGraph(N,x_pos_e,effi_suma);
   eff_sum ->SetMarkerStyle(24);
@@ -549,8 +682,9 @@ void analysis_pos(){
   auto mg = new TMultiGraph();
   mg->Add(eff_sum);
   mg->Add(eff_ind);
-  TCanvas *c9 = new TCanvas("c9","Efficiency");
-  eff_sum->SetTitle("Efficiency:X [cm];Efficiency");
+  TCanvas *c11 = new TCanvas("c11","Efficiency");
+  c11->cd();
+  eff_sum->SetTitle("Efficiency;X [cm];Efficiency");
   eff_sum->Draw("AP");
 
   

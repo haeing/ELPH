@@ -15,7 +15,8 @@ class G4VisAttributes;
 class BACDetectorConstruction : public G4VUserDetectorConstruction
 {
 public:
-  BACDetectorConstruction(const G4String &parameter1, const G4String &parameter2, const G4String &parameter3);
+
+  BACDetectorConstruction(const G4String &parameter3);
   virtual ~BACDetectorConstruction();
 
   virtual void ConstructSDandField();
@@ -28,9 +29,8 @@ private:
 
   
 
-  G4double pa1;
-  G4double pa2;
   G4double pa3;
+
   
   G4VPhysicalVolume* physWorld;
   G4VPhysicalVolume* physDetect;
@@ -50,9 +50,8 @@ private:
 
   std::vector<G4VisAttributes*> fVisAttributes;
 
-  G4String parameter1;
-  G4String parameter2;
   G4String parameter3;
+
 
   
 };

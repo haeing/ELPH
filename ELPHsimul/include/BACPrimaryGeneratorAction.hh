@@ -17,7 +17,7 @@ class G4Box;
 class BACPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
 public:
-  BACPrimaryGeneratorAction();
+  BACPrimaryGeneratorAction(const G4String &parameter1, const G4String &parameter2);
   virtual ~BACPrimaryGeneratorAction();
   virtual void GeneratePrimaries(G4Event *anEvent);
   virtual void GenerateBeamKaonMBr(G4Event *anEvent, G4ThreeVector D, G4ThreeVector P,G4String particle);
@@ -27,6 +27,10 @@ public:
 
 
 private:
+
+  G4double pa1;
+  G4double pa2;
+  
   G4ParticleGun* fParticleGun;
   G4ParticleTable* particleTable;
   Int_t bp_file_ndata;
@@ -35,6 +39,9 @@ private:
   const double mass_pim = 0.139570;
   G4String particle = "electron";
   G4double energy;
+
+  G4String parameter1;
+  G4String parameter2;
 
 };
 

@@ -14,8 +14,8 @@
 #include "TTree.h"
 #include "Randomize.hh"
 
-BACPrimaryGeneratorAction::BACPrimaryGeneratorAction()
-  : G4VUserPrimaryGeneratorAction()
+BACPrimaryGeneratorAction::BACPrimaryGeneratorAction(const G4String &par1, const G4String &par2)
+  : G4VUserPrimaryGeneratorAction(),parameter1(par1),parameter2(par2)
 {
   G4int n_particle = 1;
   
@@ -50,15 +50,18 @@ void BACPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
   
   //homogeneous test------------------------------------
+
+  pa1 = std::stod(parameter1);
+  pa2 = std::stod(parameter2);
+
+  G4double x_moving = pa1*mm;
+  G4double y_moving = pa2*mm;
   
   G4double momentum = 0.735;
   //G4double momentum = 4;
   G4double beam_size = 125;
   G4double tight_size = 10;
 
-  //SAC
-  //G4double tight_size_x = 145;
-  //G4double tight_size_y = 113;
 
   //BAC
   G4double tight_size_x = 10;
@@ -89,13 +92,10 @@ void BACPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   //fParticleGun->SetParticleMomentumDirection ( G4ThreeVector(TMath::Sin(5.5*degree),0,TMath::Cos(5.5*degree)) );
   
 
-  //G4double x = beam_size*0.5-G4UniformRand()*beam_size*mm;
   G4double x = tight_size_x*0.5-G4UniformRand()*tight_size_x*mm;
-  //G4double x = 100*0.5-G4UniformRand()*100*mm;
-  //original 220621
-  //G4double y = beam_size*0.5-G4UniformRand()*beam_size*mm;
   G4double y = tight_size_y*0.5-G4UniformRand()*tight_size_y*mm;
-  fParticleGun->SetParticlePosition(G4ThreeVector(x-0*cm,y+1*cm-lower,-5*cm) );
+  //fParticleGun->SetParticlePosition(G4ThreeVector(x-0*cm,y+1*cm-lower,-5*cm) );
+  fParticleGun->SetParticlePosition(G4ThreeVector(x+x_moving,y+1*cm-lower+y_moving,-5*cm) );
   //fParticleGun->SetParticlePosition(G4ThreeVector(x,y,-5*cm) );
   //fParticleGun -> SetParticleDefinition (particleTable -> FindParticle("opticalphoton"));
   fParticleGun->SetParticleEnergy(energy);
