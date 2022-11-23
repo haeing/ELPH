@@ -1,6 +1,6 @@
 //Y position : -35 -23 -11 -10 0
 
-Int_t y_pos = 0;
+Int_t y_pos = -35;
 
 void analysis_pos(){
   gStyle -> SetOptFit(1);

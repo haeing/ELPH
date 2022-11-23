@@ -102,9 +102,15 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   blacksheet->AddElement(H,2);
 
   
-
+  /*
   G4Material *Mylar = new G4Material("Mylar", 0.91*g/cm3, 1);
   Mylar->AddElement(AlE,1);
+  */
+
+  G4Material *Mylar = new G4Material("Mylar", 1.39*g/cm3, 3);
+  Mylar->AddElement(C, 5);
+  Mylar->AddElement(H, 4);
+  Mylar->AddElement(O, 2);
 
 
   
@@ -223,6 +229,38 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   blacksheet->SetMaterialPropertiesTable(prop_bs);
 
 
+
+  //Checking Scintillation from Mylar
+  G4double mylar_ep[] = {1.3*eV,7.*eV};
+  G4double mylar_rindex[] = {1.63,1.70};
+  G4double mylar_abs[] = {1*cm,1*cm};
+
+  G4double mylar_ep1[] = {1.24*eV,7.*eV};
+
+  G4double scin_ep1[] = {2.18*eV,2.21*eV,2.25*eV,2.28*eV,2.32*eV,2.36*eV,2.39*eV,2.41*eV,2.44*eV,2.46*eV,2.49*eV,2.51*eV,
+    2.54*eV,2.55*eV,2.58*eV,2.61*eV,2.63*eV,2.64*eV,2.66*eV,2.68*eV,2.7*eV,2.72*eV,2.73*eV,2.75*eV,2.77*eV,2.79*eV,
+    2.82*eV,2.85*eV,2.87*eV,2.89*eV,2.91*eV,2.93*eV,2.95*eV,2.96*eV,2.965*eV,2.97*eV,2.99*eV,3*eV,3.02*eV,3.03*eV,
+    3.05*eV,3.06*eV,3.08*eV,3.09*eV,3.12*eV,3.15*eV,3.2*eV};
+  G4double scin_fast[]={0.00014325,0.0015758,0.00329528,0.00587386,0.0080231,0.01060168,0.01862478,0.02134662,
+    0.02363911,0.0265042,0.02908321,0.03123203,0.03366778,0.0358166,0.03739239,0.03939838,0.04054442,0.04169045,
+    0.04212022,0.0415472,0.04068767,0.03882536,0.03681938,0.03495707,0.03280783,0.03123203,0.02893995,0.02636095,
+    0.02406888,0.02163313,0.01991407,0.01833827,0.01776483,0.01590252,0.01446998,0.01318069,0.01146121,0.01017192,
+    0.00902588,0.00773659,0.00644688,0.00515759,0.00458457,0.00329528,0.00214882,0.00143255,0.00085953,0.00042976};
+
+  const G4int numentries_scin1 = sizeof(scin_ep1)/sizeof(G4double);
+  assert (sizeof(scin_ep1) == sizeof(scin_fast));
+  G4MaterialPropertiesTable* prop_mylar = new G4MaterialPropertiesTable();
+  prop_mylar->AddProperty("RINDEX",mylar_ep,mylar_rindex,2)->SetSpline(true);
+  prop_mylar->AddProperty("ABSLENGTH",mylar_ep,mylar_abs,2)->SetSpline(true);
+  prop_mylar->AddProperty("FASTCOMPONENT",scin_ep1,scin_fast,numentries_scin1)->SetSpline(true);
+  prop_mylar->AddProperty("SLOWCOMPONENT",scin_ep1,scin_fast,numentries_scin1)->SetSpline(true);
+  prop_mylar->AddConstProperty("SCINTILLATIONYIELD",10000./MeV);
+  prop_mylar->AddConstProperty("RESOLUTIONSCALE",1.0);
+  prop_mylar->AddConstProperty("FASTTIMECONSTANT", 1.*ns);
+  prop_mylar->AddConstProperty("SLOWTIMECONSTANT",2.8*ns);
+  prop_mylar->AddConstProperty("YIELDRATIO",0.8);
+  Mylar->SetMaterialPropertiesTable(prop_mylar);
+  /*
   //Mylar property
   G4double mylar_ep[]={1.4*eV,1.48*eV,1.52*eV,1.56*eV,1.6*eV,1.7*eV,1.8*eV,1.9*eV,2*eV,2.2*eV,2.4*eV,2.6*eV,2.8*eV,3*eV,3.4*eV,3.8*eV,4*eV,5*eV,6*eV,7*eV};
 
@@ -241,6 +279,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   prop_mylar->AddProperty("IMAGINARYRINDEX",mylar_ep,mylar_ima,numentries_mylar)->SetSpline(true);
   prop_mylar->AddProperty("ABSLENGTH",mylar_ep1,mylar_abs,2)->SetSpline(true);
   Mylar->SetMaterialPropertiesTable(prop_mylar);
+  */
 
   
   
@@ -328,10 +367,10 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
 
 
   //ELPH reflector behind the aerogel
-  G4Box* Behind = new G4Box("Behind",Aerox_real/2,Aeroy_real/2,1*mm);
+  G4Box* Behind = new G4Box("Behind",Aerox_real/2,Aeroy_real/2,0.001*mm);
   BehindLW = new G4LogicalVolume(Behind,Mylar,"Behind");
 
-  new G4PVPlacement(0,G4ThreeVector(0,10*mm-lower,-Aeroz_real/2-1*mm+5*mm),BehindLW,"Behind",logicWorld,false,0,checkOverlaps);
+  new G4PVPlacement(0,G4ThreeVector(0,10*mm-lower,-Aeroz_real/2-0.001*mm+5*mm),BehindLW,"Behind",logicWorld,false,0,checkOverlaps);
 
   //ELPH reflector bottom
 
@@ -365,7 +404,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   G4double p = 36;
   for(int i=0;i<numRZ;i++){
     x[i] = i*15;
-    x_out[i] = (i*15+1);
+    x_out[i] = (i*15)+0.002;
     y[i] = x[i]*x[i]/(4*p);
       
   }
@@ -389,6 +428,8 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   G4double parz = Aeroz_real/2+mppc_place+5*cm;
 
   new G4PVPlacement(rotY,G4ThreeVector(0,pary,parz),ReflectLW,"Reflect",logicWorld,false,0,checkOverlaps);
+  new G4PVPlacement(rotY,G4ThreeVector(0,pary,parz+0.003*mm),ReflectLW,"Reflect",logicWorld,false,0,checkOverlaps);
+  new G4PVPlacement(rotY,G4ThreeVector(0,pary,parz+0.006*mm),ReflectLW,"Reflect",logicWorld,false,0,checkOverlaps);
 
     
 
@@ -497,9 +538,35 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   new G4LogicalSkinSurface("bs_surface",HolderLW,surface_bs);
 
   
+
+  //For checking scintillation from the mylar
+  G4OpticalSurface* surface_mylar = new G4OpticalSurface("surface_mylar");
+  surface_mylar->SetType(dielectric_dielectric);
+  surface_mylar->SetFinish(polished);    
+  surface_mylar->SetModel(unified);
   
+  G4MaterialPropertiesTable* sp_mylar = new G4MaterialPropertiesTable();
+  G4double mylar_reflec[] = {0.95,0.95};
+  G4double mylar_effi[] = {1.0,1.0};
+  G4double mylar_specularLobe[] = {0.3,0.3};
+  G4double mylar_specularSpike[]={0.7,0.7};
+  G4double mylar_backScatter[] = {0,0};
+  G4double mylar_trans[] = {0.5,0.5};
+  sp_mylar->AddProperty("EFFICIENCY",mylar_ep1,mylar_effi,2)->SetSpline(true);
+  sp_mylar->AddProperty("REFLECTIVITY",air_ep,mylar_reflec,2)->SetSpline(true);
+  sp_mylar->AddProperty("SPECULARLOBECONSTANT",mylar_ep1,mylar_specularLobe,2)->SetSpline(true);
+  sp_mylar->AddProperty("SPECULARSPIKECONSTANT",mylar_ep1,mylar_specularSpike,2)->SetSpline(true);
+  sp_mylar->AddProperty("BACKSCATTERCONSTANT",mylar_ep1,mylar_backScatter,2)->SetSpline(true);
+  sp_mylar->AddProperty("TRANSMITTANCE",mylar_ep1,mylar_trans,2)->SetSpline(true);
+  surface_mylar->SetMaterialPropertiesTable(sp_mylar);
   
 
+  new G4LogicalSkinSurface("mylar_surface",ReflectLW,surface_mylar);
+  new G4LogicalSkinSurface("mylar_surface",SideLW,surface_mylar);
+  new G4LogicalSkinSurface("mylar_surface",BottomLW,surface_mylar);
+  new G4LogicalSkinSurface("mylar_surface",BehindLW,surface_mylar);
+  
+  /*
   //mylar_al surface-------------------
   G4OpticalSurface* surface_mylar = new G4OpticalSurface("surface_mylar");
   surface_mylar->SetType(dielectric_metal);
@@ -527,7 +594,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   new G4LogicalSkinSurface("mylar_surface",BottomLW,surface_mylar);
   new G4LogicalSkinSurface("mylar_surface",BehindLW,surface_mylar);
 
-
+  */
 
 
 
