@@ -3,7 +3,9 @@
 Int_t y_pos = 0;
 
 void analysis_pos(){
-
+  gStyle -> SetOptFit(1);
+  gStyle -> SetOptStat(0);
+  
   TFile *file_pe;
   if(y_pos == 0||y_pos ==-10)file_pe = new TFile("../../ELPH_data/exp_data/run00333.root","read");
   else if(y_pos ==-35 || y_pos ==-23 ||y_pos ==-11)file_pe = new TFile("../../ELPH_data/exp_data/run00079.root","read");
@@ -161,7 +163,7 @@ void analysis_pos(){
 
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
-	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_att/elph_221020_%dmm_-10mm_att_%d.root",x_pos[i]*10,att_start+50*j),"read");
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_cal_att/elph_221020_%dmm_-10mm.root",x_pos[i]*10),"read");
       }
     }
   }
@@ -178,7 +180,7 @@ void analysis_pos(){
 
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
-	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_att/elph_221018_%dmm_-11mm_att_%d.root",x_pos[i]*10,att_start+50*j),"read");
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_cal_att/elph_221018_%dmm_-11mm.root",x_pos[i]*10),"read");
       }
     }
   }
@@ -195,7 +197,7 @@ void analysis_pos(){
 
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
-	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_att/elph_221018_%dmm_-23mm_att_%d.root",x_pos[i]*10,att_start+50*j),"read");
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_cal_att/elph_221018_%dmm_-23mm.root",x_pos[i]*10),"read");
       }
     }
   }
@@ -215,7 +217,7 @@ void analysis_pos(){
 
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
-	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_att/elph_221018_%dmm_-35mm_att_%d.root",x_pos[i]*10,att_start+50*j),"read");
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_cal_att/elph_221018_%dmm_-35mm.root",x_pos[i]*10),"read");
       }
     }
   }
@@ -663,7 +665,7 @@ void analysis_pos(){
   TLegend *le_s = new TLegend(0.8,0.5,0.48,0.6);
   le_s->AddEntry(npe0,"ELPH SUM result");
   for(int i=0;i<att;i++){
-    le_s->AddEntry(npe[i],Form("Simulation att %d mm",att_start+i*50));
+    le_s->AddEntry(npe[i],"Simulation");
   }
   
   TCanvas *c10 = new TCanvas("c10","Npe");
