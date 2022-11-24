@@ -480,7 +480,8 @@ void analysis_pos(){
 
       //Trigger counter cut condition
       for(int j=0;j<4;j++){
-	if(Ta[i][j][0]>pa_a[i][j][1]-3*pa_a[i][j][2]&&Ta[i][j][0]<3840){
+	//if(Ta[i][j][0]>pa_a[i][j][1]-3*pa_a[i][j][2]&&Ta[i][j][0]<3840){
+	if(Ta[i][j][0]>pa_a[i][j][1]-3*pa_a[i][j][2]&&Ta[i][j][0]<pa_a[i][j][1]+3*pa_a[i][j][2]){
 	  if(Tt[i][j][0][0]>pa_t[i][j][1]-5*pa_t[i][j][2]&&Tt[i][j][0][0]<pa_t[i][j][1]+5*pa_t[i][j][2]){
 	    pass+=1;
 	    
