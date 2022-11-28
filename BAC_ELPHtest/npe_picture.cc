@@ -1,6 +1,6 @@
 void npe_picture(){
 
-  Int_t F = 5; //# of files
+  Int_t F = 1; //# of files
   Int_t y_pos[F];
   y_pos[0] = 0;
   y_pos[1] = -10;
@@ -48,23 +48,30 @@ void npe_picture(){
     }
     npe[i] = new TGraphErrors(N,x_pos,pa_mean,x_err,pa_sigma);
     npe[i]->SetMarkerStyle(24);
-    npe[i]->SetMarkerSize(1);
-    npe[i]->SetMarkerColor(i+1);
-    npe[i]->SetLineColor(i+1);
+    npe[i]->SetMarkerSize(2);
+    npe[i]->SetMarkerColor(kBlack);
+    npe[i]->SetLineColor(kBlack);
 
-    npe[i] = new TGraphErrors(N,x_pos,pa_si_mean,x_err,pa_si_sigma);
-    npe[i]->SetMarkerStyle(10);
-    npe[i]->SetMarkerSize(1);
-    npe[i]->SetMarkerColor(i+1);
-    npe[i]->SetLineColor(i+1);
+    npe_simul[i] = new TGraphErrors(N,x_pos,pa_si_mean,x_err,pa_si_sigma);
+    npe_simul[i]->SetMarkerStyle(22);
+    npe_simul[i]->SetMarkerSize(2);
+    npe_simul[i]->SetMarkerColor(kBlue);
+    npe_simul[i]->SetLineColor(kBlue);
     
     mg_npe->Add(npe[i]);
     mg_npe->Add(npe_simul[i]);
     
   }
 
+  TLegend *le_s = new TLegend(0.8,0.5,0.48,0.6);
+  for(int i=0;i<F;i++){
+    le_s->AddEntry(npe[i],"Experiment");
+    le_s->AddEntry(npe_simul[i],"Simulation");
+  }
   TCanvas *c1 = new TCanvas("c1","c1",800,650);
+  mg_npe->SetTitle("Npe;X [mm];N_{p.e.}");
   mg_npe->Draw("AP");
+  le_s->Draw();
   
 
 

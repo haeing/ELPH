@@ -1,13 +1,13 @@
 //Y position : -35 -23 -11 -10 0 12
 
-Int_t y_pos = -10;
+Int_t y_pos = 0;
 
 void analysis_pos(){
   //gStyle -> SetOptFit(1);
   gStyle -> SetOptStat(0);
   
   TFile *file_pe;
-  if(y_pos == 0||y_pos ==-10)file_pe = new TFile("../../ELPH_data/exp_data/run00333.root","read");
+  if(y_pos == 12 ||y_pos == 0||y_pos ==-10)file_pe = new TFile("../../ELPH_data/exp_data/run00333.root","read");
   else if(y_pos ==-35 || y_pos ==-23 ||y_pos ==-11)file_pe = new TFile("../../ELPH_data/exp_data/run00079.root","read");
   
   Int_t N;  //x position
@@ -138,6 +138,8 @@ void analysis_pos(){
 
   TH2D *ind_sum[N];
 
+  TH2D *sumt_2d[N];
+
   TF1 *f_a[N][4];
   TF1 *f_t[N][4];
   
@@ -235,12 +237,18 @@ void analysis_pos(){
   }
 
   else if(y_pos==12){
-    file_po[0] = new TFile("../../ELPH_data/exp_data/run00326.root","read");
-    file_po[1] = new TFile("../../ELPH_data/exp_data/run00328.root","read");
-    file_po[2] = new TFile("../../ELPH_data/exp_data/run00329.root","read");
-    file_po[3] = new TFile("../../ELPH_data/exp_data/run00330.root","read");
-    file_po[4] = new TFile("../../ELPH_data/exp_data/run00331.root","read");
-    file_po[5] = new TFile("../../ELPH_data/exp_data/run00332.root","read");
+    file_po[0] = new TFile("../../ELPH_data/exp_data/run00328.root","read"); //-6
+    file_po[1] = new TFile("../../ELPH_data/exp_data/run00329.root","read"); //-4
+    file_po[2] = new TFile("../../ELPH_data/exp_data/run00330.root","read"); //-2
+    file_po[3] = new TFile("../../ELPH_data/exp_data/run00326.root","read"); //0
+    file_po[4] = new TFile("../../ELPH_data/exp_data/run00331.root","read"); //2
+    file_po[5] = new TFile("../../ELPH_data/exp_data/run00332.root","read"); //4
+
+    for(int i=0;i<N;i++){
+      for(int j=0;j<att;j++){
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_cal_att/elph_221020_%dmm_0mm.root",x_pos[i]*10),"read");
+      }
+    }
   }
   
     
@@ -293,6 +301,8 @@ void analysis_pos(){
     hist_sumt_cut[i] = new TH1D(Form("hist_sumt_cut_%dcm",x_pos[i]),Form("hist_sumt_cut_%dcm",x_pos[i]),500,0,1500);
 
     ind_sum[i] = new TH2D(Form("ind_sum%d",i),Form("ind_sum%d",i),260,-100,2500,160,-100,1500);
+
+    sumt_2d[i] = new TH2D(Form("sumt_2d%d",i),Form("sumt_2d%d",i),500,0,1500,500,0,1500);
     
 
     f_inda[i] = new TF1(Form("f_inda_%dcm",x_pos[i]),"gaus(0)",-10,100);
@@ -317,6 +327,8 @@ void analysis_pos(){
 
   //Trigger counters Cut condition
 
+  Int_t factor_a = 5;
+
   Double_t pa_a[N][4][3];
   Double_t pa_t[N][4][3];
   
@@ -337,7 +349,7 @@ void analysis_pos(){
       data_po[i]->GetEntry(n);
       pass = 0;
       for(int j=0;j<4;j++){
-	if(Ta[i][j][0]>pa_a[i][j][1]-3*pa_a[i][j][2]&&Ta[i][j][0]<3840){
+	if(Ta[i][j][0]>pa_a[i][j][1]-factor_a*pa_a[i][j][2]&&Ta[i][j][0]<3840){
 	  if(Tt[i][j][0][0]>pa_t[i][j][1]-5*pa_t[i][j][2]&&Tt[i][j][0][0]<pa_t[i][j][1]+5*pa_t[i][j][2]){
 	    pass+=1;
 	    
@@ -415,15 +427,28 @@ void analysis_pos(){
       pass = 0;
 
       //Trigger counter cut condition
-      for(int j=0;j<4;j++){
-	if(Ta[i][j][0]>pa_a[i][j][1]-adc_factor*pa_a[i][j][2]&&Ta[i][j][0]<3840){
-	  if(Tt[i][j][0][0]>pa_t[i][j][1]-5*pa_t[i][j][2]&&Tt[i][j][0][0]<pa_t[i][j][1]+5*pa_t[i][j][2]){
-	    pass+=1;
+      if(y_pos!=12){
+	for(int j=0;j<4;j++){
+	  if(Ta[i][j][0]>pa_a[i][j][1]-factor_a*pa_a[i][j][2]&&Ta[i][j][0]<3840){
+	    if(Tt[i][j][0][0]>pa_t[i][j][1]-5*pa_t[i][j][2]&&Tt[i][j][0][0]<pa_t[i][j][1]+5*pa_t[i][j][2]){
+	      pass+=1;
 	    
+	    }
 	  }
 	}
+	if(pass==4){
+	  hist_suma[i]->Fill((ADCs[i][0]-parameter_pe[4][1])/one_photon);
+	  hist_sumt[i]->Fill(TDCs[i][0][0]);
+	  for(int j=0;j<4;j++){
+	    numpho += (ADCi[i][j]-parameter_pe[j][1])/ind_gain[j];
+	    rawadc+=ADCi[i][j]-parameter_pe[j][1];
+	    hist_indt[i][j]->Fill(TDCi[i][j][0]);
+	  }
+	  hist_inda[i]->Fill(numpho);
+	  ind_sum[i]->Fill(rawadc,ADCs[i][0]-parameter_pe[4][1]);
+	}
       }
-      if(pass==4){
+      if(y_pos==12){
 	hist_suma[i]->Fill((ADCs[i][0]-parameter_pe[4][1])/one_photon);
 	hist_sumt[i]->Fill(TDCs[i][0][0]);
 	for(int j=0;j<4;j++){
@@ -434,6 +459,7 @@ void analysis_pos(){
 	hist_inda[i]->Fill(numpho);
 	ind_sum[i]->Fill(rawadc,ADCs[i][0]-parameter_pe[4][1]);
       }
+      
     }
   }
 
@@ -447,12 +473,17 @@ void analysis_pos(){
   for(int i=0;i<N;i++){
     c3->cd(i+1);
     hist_suma[i]->SetLineColor(kBlack);
-    hist_suma[i]->Fit(f_suma[i],"Q","",-10,60);
+    if(y_pos!=12)hist_suma[i]->Fit(f_suma[i],"Q","",-10,60);
+    else if(y_pos==12){
+      if(x_pos[i]!=-4)hist_suma[i]->Fit(f_suma[i],"Q","",0,60);
+      else if(x_pos[i]==-4)hist_suma[i]->Fit(f_suma[i],"Q","",10,60);
+    }
     f_suma[i]->GetParameters(pa_suma[i]);
     
     hist_inda[i]->SetLineColor(kBlue);
     hist_inda[i]->Draw("sames");
-    hist_inda[i]->Fit(f_inda[i],"Q","",-10,60);
+    if(y_pos!=12)hist_inda[i]->Fit(f_inda[i],"Q","",-10,60);
+    if(y_pos==12)hist_inda[i]->Fit(f_inda[i],"Q","",0,60);
     f_inda[i]->GetParameters(pa_inda[i]);
   }
   c3->Close();
@@ -493,6 +524,7 @@ void analysis_pos(){
   Int_t tot_evt[N];
   Int_t evt_suma[N];
   Int_t evt_inda[N];
+  Int_t pass_t;
   
   //Determine ADC cut
   for(int i=0;i<N;i++){
@@ -504,50 +536,89 @@ void analysis_pos(){
       numpho = 0;
       pass = 0;
       pass_inda = 0;
+      pass_t = 0;
 
       //Trigger counter cut condition
-      for(int j=0;j<4;j++){
-	if(Ta[i][j][0]>pa_a[i][j][1]-adc_factor*pa_a[i][j][2]&&Ta[i][j][0]<3840){
-	//if(Ta[i][j][0]>pa_a[i][j][1]-3*pa_a[i][j][2]&&Ta[i][j][0]<pa_a[i][j][1]+3*pa_a[i][j][2]){
-	  if(Tt[i][j][0][0]>pa_t[i][j][1]-5*pa_t[i][j][2]&&Tt[i][j][0][0]<pa_t[i][j][1]+5*pa_t[i][j][2]){
-	    pass+=1;
+      if(y_pos!=12){
+	for(int j=0;j<4;j++){
+	  if(Ta[i][j][0]>pa_a[i][j][1]-factor_a*pa_a[i][j][2]&&Ta[i][j][0]<3840){
+	    if(Tt[i][j][0][0]>pa_t[i][j][1]-5*pa_t[i][j][2]&&Tt[i][j][0][0]<pa_t[i][j][1]+5*pa_t[i][j][2]){
+	      pass+=1;
 	    
+	    }
 	  }
 	}
-      }
-      if(pass==4){
-	tot_evt[i]+=1;
-	if(ADCs[i][0]<3840){
-	  numpho_sum = (ADCs[i][0]-parameter_pe[4][1])/one_photon;
-	  //if(numpho_sum>2){
-	    if(TDCs[i][0][0]>pa_sumt[i][1]-5*pa_sumt[i][2]&&TDCs[i][0][0]<pa_sumt[i][1]+5*pa_sumt[i][2]){
+	if(pass==4){
+	  tot_evt[i]+=1;
+	  if(ADCs[i][0]<3840){
+	    numpho_sum = (ADCs[i][0]-parameter_pe[4][1])/one_photon;
+	    //if(numpho_sum>2){
+	    for(int k=0;k<5;k++){
+	      if(TDCs[i][0][k]>pa_sumt[i][1]-5*pa_sumt[i][2]&&TDCs[i][0][k]<pa_sumt[i][1]+5*pa_sumt[i][2])pass_t+=1;
+	      
+	    }
+	    if(pass_t==1){
 	      evt_suma[i]+=1;
 	      hist_suma_cut[i]->Fill(numpho_sum);
 	      hist_sumt_cut[i]->Fill(TDCs[i][0][0]);
 	    }
 	    //}
-	}
+	  }
 	
-	for(int j=0;j<4;j++){
-	  if(ADCi[i][j]<3840)pass_inda+=1;
-	  numpho += (ADCi[i][j]-parameter_pe[j][1])/ind_gain[j];
-	}
-	if(pass_inda==4){
-	  //if(numpho>2){
+	  for(int j=0;j<4;j++){
+	    if(ADCi[i][j]<3840)pass_inda+=1;
+	    numpho += (ADCi[i][j]-parameter_pe[j][1])/ind_gain[j];
+	  }
+	  if(pass_inda==4){
+	    //if(numpho>2){
 	    evt_inda[i]+=1;
 	    hist_inda_cut[i]->Fill(numpho);
 	    for(int j=0;j<4;j++){
 	      hist_indt_cut[i][j]->Fill(TDCi[i][j][0]);
 	    }
 	    //}
+	  }
+	}
+      }
+      
+      
+      else if(y_pos==12){
+	tot_evt[i]+=1;
+	if(ADCs[i][0]<3840){
+	  numpho_sum = (ADCs[i][0]-parameter_pe[4][1])/one_photon;
+	  for(int k=0;k<5;k++){
+	    if(TDCs[i][0][k]>pa_sumt[i][1]-5*pa_sumt[i][2]&&TDCs[i][0][k]<pa_sumt[i][1]+5*pa_sumt[i][2])pass_t+=1;
+	  }
+	  if(pass_t==1){
+	    evt_suma[i]+=1;
+	    hist_suma_cut[i]->Fill(numpho_sum);
+	    hist_sumt_cut[i]->Fill(TDCs[i][0][0]);
+	  }
+	}
+      
+	for(int j=0;j<4;j++){
+	  if(ADCi[i][j]<3840)pass_inda+=1;
+	  numpho += (ADCi[i][j]-parameter_pe[j][1])/ind_gain[j];
+	}
+	if(pass_inda==4){
+	  evt_inda[i]+=1;
+	  hist_inda_cut[i]->Fill(numpho);
+	  for(int j=0;j<4;j++){
+	    hist_indt_cut[i][j]->Fill(TDCi[i][j][0]);
+	  }
 	}
       }
     }
+  
   }
 
 
+  
+
+
+
   TCanvas *c5 = new TCanvas("c5","BAC Sum ADC histogram",800,650);
-  c5->Divide(4,2);
+  c5->Divide(4,3);
   for(int i=0;i<N;i++){
     c5->cd(i+1);
     hist_suma[i]->SetLineColor(kBlack);
@@ -562,7 +633,7 @@ void analysis_pos(){
   }
 
   TCanvas *c6 = new TCanvas("c6","BAC Sum TDC histogram",800,650);
-  c6->Divide(4,2);
+  c6->Divide(4,3);
   for(int i=0;i<N;i++){
     c6->cd(i+1);
     gPad->SetLogy();

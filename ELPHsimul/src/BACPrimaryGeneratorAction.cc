@@ -64,8 +64,8 @@ void BACPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 
   //BAC
-  G4double tight_size_x = 10;
-  G4double tight_size_y = 10;
+  G4double tight_size_x = 20;
+  G4double tight_size_y = 20;
   //G4double lower = 23*mm;
   G4double lower = 0*mm;
 

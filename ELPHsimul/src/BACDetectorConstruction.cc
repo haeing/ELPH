@@ -145,7 +145,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   G4MaterialPropertiesTable* prop_aerogel1 = new G4MaterialPropertiesTable();
 
 
-  G4double factor = 8;
+  G4double factor = 10;
 
   G4double aerogel1_ep[] = {1.3*eV,7.*eV};
   G4double aerogel_ep[] = {1.3*eV,1.56*eV,1.68*eV,1.84*eV,2.06*eV,2.26*eV,2.54*eV,2.90*eV,3.10*eV,3.28*eV,3.94*eV,4.94*eV,7.0*eV};
@@ -546,18 +546,22 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   surface_mylar->SetModel(unified);
   
   G4MaterialPropertiesTable* sp_mylar = new G4MaterialPropertiesTable();
-  G4double mylar_reflec[] = {0.95,0.95};
+  G4double mylar_ep_r[] = {1.3*eV,1.56*eV,1.7*eV,1.83*eV,2.1*eV,2.34*eV,2.67*eV,3.13*eV,3.47*eV,3.79*eV,4.27*eV,4.53*eV,4.86*eV,7*eV};
+  G4double mylar_reflec[] = {0.83,0.86,0.87,0.88,0.90,0.91,0.92,0.91,0.9,0.88,0.84,0.81,0.76,0.7};
   G4double mylar_effi[] = {1.0,1.0};
   G4double mylar_specularLobe[] = {0.3,0.3};
   G4double mylar_specularSpike[]={0.7,0.7};
   G4double mylar_backScatter[] = {0,0};
-  G4double mylar_trans[] = {0.5,0.5};
+  G4double mylar_ep_t[] = {1.3*eV,2.48*eV,2.64*eV,3*eV,3.28*eV,3.44*eV,3.66*eV,3.76*eV,3.79*eV,3.87*eV,3.97*eV,3.99*eV,4.11*eV,7*eV};
+  //G4double mylar_trans[] = {0.9,0.87,0.86,0.85,0.83,0.8,0.75,0.72,0.68,0.43,0.06,0.0,0.0,0.0};
+  G4double mylar_trans[] = {0.3,0.3};
   sp_mylar->AddProperty("EFFICIENCY",mylar_ep1,mylar_effi,2)->SetSpline(true);
-  sp_mylar->AddProperty("REFLECTIVITY",air_ep,mylar_reflec,2)->SetSpline(true);
+  sp_mylar->AddProperty("REFLECTIVITY",mylar_ep_r,mylar_reflec,14)->SetSpline(true);
   sp_mylar->AddProperty("SPECULARLOBECONSTANT",mylar_ep1,mylar_specularLobe,2)->SetSpline(true);
   sp_mylar->AddProperty("SPECULARSPIKECONSTANT",mylar_ep1,mylar_specularSpike,2)->SetSpline(true);
   sp_mylar->AddProperty("BACKSCATTERCONSTANT",mylar_ep1,mylar_backScatter,2)->SetSpline(true);
-  sp_mylar->AddProperty("TRANSMITTANCE",mylar_ep1,mylar_trans,2)->SetSpline(true);
+  //sp_mylar->AddProperty("TRANSMITTANCE",mylar_ep_t,mylar_trans,14)->SetSpline(true);
+  //sp_mylar->AddProperty("TRANSMITTANCE",mylar_ep1,mylar_trans,2)->SetSpline(true);
   surface_mylar->SetMaterialPropertiesTable(sp_mylar);
   
 

@@ -51,7 +51,7 @@ int main(int argc,char** argv)
     ui = new G4UIExecutive(argc, argv);
     histname = "geant4_test.root";
     par1_put ="0";
-    par2_put = "0";
+    par2_put = "12";
     par3_put = "150";
     
   }
