@@ -1,9 +1,9 @@
-//Y position : -35 -23 -11 -10 0
+//Y position : -35 -23 -11 -10 0 12
 
-Int_t y_pos = -35;
+Int_t y_pos = -10;
 
 void analysis_pos(){
-  gStyle -> SetOptFit(1);
+  //gStyle -> SetOptFit(1);
   gStyle -> SetOptStat(0);
   
   TFile *file_pe;
@@ -17,6 +17,7 @@ void analysis_pos(){
   else if(y_pos ==-11)N=7;
   else if(y_pos ==-23)N=7;
   else if(y_pos ==-35)N=11;
+  else if(y_pos == 12)N=6;
   
   Int_t att = 1;
   
@@ -83,6 +84,17 @@ void analysis_pos(){
     x_pos[9] = 5;
     x_pos[10] = 6;
   }
+
+  else if(y_pos==12){
+    x_pos[0] = -6;
+    x_pos[1] = -4;
+    x_pos[2] = -2;
+    x_pos[3] = 0;
+    x_pos[4] = 2;
+    x_pos[5] = 4;
+  }
+    
+    
 
   Int_t start_pos = -6;
   TFile *file_po[N];
@@ -221,6 +233,17 @@ void analysis_pos(){
       }
     }
   }
+
+  else if(y_pos==12){
+    file_po[0] = new TFile("../../ELPH_data/exp_data/run00326.root","read");
+    file_po[1] = new TFile("../../ELPH_data/exp_data/run00328.root","read");
+    file_po[2] = new TFile("../../ELPH_data/exp_data/run00329.root","read");
+    file_po[3] = new TFile("../../ELPH_data/exp_data/run00330.root","read");
+    file_po[4] = new TFile("../../ELPH_data/exp_data/run00331.root","read");
+    file_po[5] = new TFile("../../ELPH_data/exp_data/run00332.root","read");
+  }
+  
+    
 
 
 
@@ -382,6 +405,8 @@ void analysis_pos(){
   Double_t numpho;
   Double_t rawadc;
 
+  Int_t adc_factor = 5;
+
   for(int i=0;i<N;i++){
     for(int n=0;n<tot[i];n++){
       data_po[i]->GetEntry(n);
@@ -391,7 +416,7 @@ void analysis_pos(){
 
       //Trigger counter cut condition
       for(int j=0;j<4;j++){
-	if(Ta[i][j][0]>pa_a[i][j][1]-3*pa_a[i][j][2]&&Ta[i][j][0]<3840){
+	if(Ta[i][j][0]>pa_a[i][j][1]-adc_factor*pa_a[i][j][2]&&Ta[i][j][0]<3840){
 	  if(Tt[i][j][0][0]>pa_t[i][j][1]-5*pa_t[i][j][2]&&Tt[i][j][0][0]<pa_t[i][j][1]+5*pa_t[i][j][2]){
 	    pass+=1;
 	    
@@ -413,6 +438,8 @@ void analysis_pos(){
   }
 
   //Fitting BAC ADC
+
+  
   TCanvas *c3 = new TCanvas("c3","BAC ADC of Ind and Sum");
   c3->Divide(N);
   Double_t pa_suma[N][3];
@@ -480,8 +507,8 @@ void analysis_pos(){
 
       //Trigger counter cut condition
       for(int j=0;j<4;j++){
-	//if(Ta[i][j][0]>pa_a[i][j][1]-3*pa_a[i][j][2]&&Ta[i][j][0]<3840){
-	if(Ta[i][j][0]>pa_a[i][j][1]-3*pa_a[i][j][2]&&Ta[i][j][0]<pa_a[i][j][1]+3*pa_a[i][j][2]){
+	if(Ta[i][j][0]>pa_a[i][j][1]-adc_factor*pa_a[i][j][2]&&Ta[i][j][0]<3840){
+	//if(Ta[i][j][0]>pa_a[i][j][1]-3*pa_a[i][j][2]&&Ta[i][j][0]<pa_a[i][j][1]+3*pa_a[i][j][2]){
 	  if(Tt[i][j][0][0]>pa_t[i][j][1]-5*pa_t[i][j][2]&&Tt[i][j][0][0]<pa_t[i][j][1]+5*pa_t[i][j][2]){
 	    pass+=1;
 	    
@@ -520,12 +547,12 @@ void analysis_pos(){
 
 
   TCanvas *c5 = new TCanvas("c5","BAC Sum ADC histogram",800,650);
-  c5->Divide(N);
+  c5->Divide(4,2);
   for(int i=0;i<N;i++){
     c5->cd(i+1);
     hist_suma[i]->SetLineColor(kBlack);
     hist_suma[i]->GetListOfFunctions()->Remove(f_suma[i]);
-    hist_suma[i]->SetTitle(Form("Sum ADC %d cm;ADC [Ch.];n",x_pos[i]));
+    hist_suma[i]->SetTitle(Form("Sum ADC %d cm;N_{p.e.};n",x_pos[i]));
     hist_suma[i]->Draw();
     
     hist_suma_cut[i]->SetLineColor(kRed);
@@ -535,7 +562,7 @@ void analysis_pos(){
   }
 
   TCanvas *c6 = new TCanvas("c6","BAC Sum TDC histogram",800,650);
-  c6->Divide(N);
+  c6->Divide(4,2);
   for(int i=0;i<N;i++){
     c6->cd(i+1);
     gPad->SetLogy();
@@ -664,14 +691,14 @@ void analysis_pos(){
   }
 
   TLegend *le_s = new TLegend(0.8,0.5,0.48,0.6);
-  le_s->AddEntry(npe0,"ELPH SUM result");
+  le_s->AddEntry(npe0,"Experiment");
   for(int i=0;i<att;i++){
     le_s->AddEntry(npe[i],"Simulation");
   }
   
   TCanvas *c10 = new TCanvas("c10","Npe");
   c10->cd();
-  mg_npe->SetTitle("Npe per each position;X [cm];Npe");
+  mg_npe->SetTitle("Npe per each position;X [cm];# of Photons");
   mg_npe->Draw("AP");
   le_s->Draw();
   
@@ -690,9 +717,38 @@ void analysis_pos(){
   eff_sum->SetTitle("Efficiency;X [cm];Efficiency");
   eff_sum->Draw("AP");
 
+
+  Double_t mean[N];
+  Double_t sigma[N];
   
+  Double_t simul_mean[N];
+  Double_t simul_sigma[N];
+  Int_t x_position[N];
+
 		      
-      
+  TFile *file_save = new TFile(Form("parameter_%d.root",y_pos),"recreate");
+  TTree* tree = new TTree("tree","tree");
+  tree->Branch("N",&N,"N/I");
+  tree->Branch("x_position",x_position,"x_position[N]/I");
+  tree->Branch("mean",mean,"mean[N]/D");
+  tree->Branch("sigma",sigma,"sigma[N]/D");
+  tree->Branch("simul_mean",simul_mean,"simul_mean[N]/D");
+  tree->Branch("simul_sigma",simul_sigma,"simul_sigma[N]/D");
+
+  for(int i=0;i<N;i++){
+    x_position[i] = x_pos[i];
+    mean[i] = pa_suma[i][1];
+    sigma[i] = pa_suma[i][2];
+    
+    simul_mean[i] = pa_simul[i][0][1];
+    simul_sigma[i] = pa_simul[i][0][2];
+    
+  }
+  tree->Fill();
+  tree->Write();
+  file_save->Close();
+  
+ 
     
       
 	
