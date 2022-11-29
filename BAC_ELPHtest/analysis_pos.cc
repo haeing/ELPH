@@ -1,6 +1,6 @@
 //Y position : -35 -23 -11 -10 0 12
 
-Int_t y_pos = 0;
+Int_t y_pos =0;
 
 void analysis_pos(){
   //gStyle -> SetOptFit(1);
@@ -17,7 +17,7 @@ void analysis_pos(){
   else if(y_pos ==-11)N=7;
   else if(y_pos ==-23)N=7;
   else if(y_pos ==-35)N=11;
-  else if(y_pos == 12)N=6;
+  else if(y_pos == 12)N=5;
   
   Int_t att = 1;
   
@@ -86,12 +86,11 @@ void analysis_pos(){
   }
 
   else if(y_pos==12){
-    x_pos[0] = -6;
-    x_pos[1] = -4;
-    x_pos[2] = -2;
-    x_pos[3] = 0;
-    x_pos[4] = 2;
-    x_pos[5] = 4;
+    x_pos[0] = -4;
+    x_pos[1] = -2;
+    x_pos[2] = 0;
+    x_pos[3] = 2;
+    x_pos[4] = 4;
   }
     
     
@@ -246,7 +245,7 @@ void analysis_pos(){
 
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
-	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_cal_att/elph_221020_%dmm_0mm.root",x_pos[i]*10),"read");
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_cal_att/elph_221020_%dmm_12mm.root",x_pos[i]*10),"read");
       }
     }
   }
@@ -688,12 +687,14 @@ void analysis_pos(){
   Double_t x_pos_e[N];
   Double_t x_error[N];
   Double_t effi_suma[N];
+  Double_t effi_suma_err[N];
   Double_t effi_inda[N];
   Double_t npe_pos[N];
   Double_t npe_error[N];
   for(int i=0;i<N;i++){
     x_pos_e[i] = x_pos[i]*1.0;
     effi_suma[i] = 1.0*evt_suma[i]/tot_evt[i];
+    effi_suma_err[i] = effi_suma[i]*TMath::Sqrt(1.0/evt_suma[i]+1.0/tot_evt[i]);
     effi_inda[i] = 1.0*evt_inda[i]/tot_evt[i];
     if(pa_suma[i][1]>=0)npe_pos[i] = pa_suma[i][1];
     else if(pa_suma[i][1]<0)npe_pos[i] = 0;
@@ -774,8 +775,9 @@ void analysis_pos(){
   le_s->Draw();
   
 
-  TGraph *eff_sum = new TGraph(N,x_pos_e,effi_suma);
-  eff_sum ->SetMarkerStyle(24);
+  TGraphErrors *eff_sum = new TGraphErrors(N,x_pos_e,effi_suma,x_error,effi_suma_err);
+  eff_sum ->SetMarkerStyle(22);
+  eff_sum ->SetMarkerSize(1.5);
   eff_sum ->SetMarkerColor(kBlack);
   TGraph *eff_ind = new TGraph(N,x_pos_e,effi_inda);
   eff_ind ->SetMarkerStyle(24);
@@ -796,6 +798,8 @@ void analysis_pos(){
   Double_t simul_sigma[N];
   Int_t x_position[N];
 
+
+
 		      
   TFile *file_save = new TFile(Form("parameter_%d.root",y_pos),"recreate");
   TTree* tree = new TTree("tree","tree");
@@ -805,6 +809,8 @@ void analysis_pos(){
   tree->Branch("sigma",sigma,"sigma[N]/D");
   tree->Branch("simul_mean",simul_mean,"simul_mean[N]/D");
   tree->Branch("simul_sigma",simul_sigma,"simul_sigma[N]/D");
+  tree->Branch("efficiency",effi_suma,"efficiency[N]/D");
+  tree->Branch("effi_error",effi_suma_err,"effi_error[N]/D");
 
   for(int i=0;i<N;i++){
     x_position[i] = x_pos[i];

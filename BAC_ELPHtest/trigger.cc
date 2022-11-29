@@ -1,6 +1,8 @@
 Int_t y_pos = 0;
 
 void trigger(){
+
+  gStyle->SetOptStat(0);
   TFile *file_pe;
   if(y_pos == 12 ||y_pos == 0||y_pos ==-10)file_pe = new TFile("../../ELPH_data/exp_data/run00333.root","read");
   else if(y_pos ==-35 || y_pos ==-23 ||y_pos ==-11)file_pe = new TFile("../../ELPH_data/exp_data/run00079.root","read");
@@ -275,12 +277,13 @@ void trigger(){
   TCanvas *c1[A];
   for(int k=0;k<A;k++){
     c1[k] = new TCanvas(Form("c1%d",k),Form("Trigger counters ADC histogram factor %d",factor_a[k]),800,650);
-    c1[k]->Divide(4,N);
+    //c1[k]->Divide(4,N);
   
-    for(int i=0;i<N;i++){
-      for(int j=0;j<4;j++){
+    for(int i=0;i<1;i++){
+      for(int j=0;j<1;j++){
 	c1[k]->cd(4*i+j+1);
 	gPad->SetLogy();
+	hist_Ta[i][j]->SetTitle("ADC;ADC [Ch.];n");
 	hist_Ta[i][j]->SetLineColor(kBlack);
 	hist_Ta[i][j]->Draw();
 
@@ -292,15 +295,16 @@ void trigger(){
       }
     }
   }
-  /*
+
   TCanvas *c2[A];
   for(int k=0;k<A;k++){
     c2[k] = new TCanvas(Form("c2%d",k),Form("Trigger counters TDC histogram factor %d",factor_a[k]),800,650);
-    c2[k]->Divide(4,N);
-    for(int i=0;i<N;i++){
-      for(int j=0;j<4;j++){
+    //c2[k]->Divide(4,N);
+    for(int i=0;i<1;i++){
+      for(int j=0;j<1;j++){
 	c2[k]->cd(4*i+j+1);
 	gPad->SetLogy();
+	hist_Tt[i][j]->SetTitle("TDC;TDC [Ch.];n");
 	hist_Tt[i][j]->SetLineColor(kBlack);
 	hist_Tt[i][j]->GetListOfFunctions()->Remove(f_t[i][j]);
 	hist_Tt[i][j]->Draw();
@@ -312,7 +316,7 @@ void trigger(){
       }
     }
   }
-  */
+
 
   TGraph *eff[A];
   TGraph *ef;
