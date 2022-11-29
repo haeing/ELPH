@@ -360,7 +360,7 @@ void analysis(){
   for(int i=0;i<N;i++){
     file3[i] = new TFile(Form("../../ELPH_data/exp_data/sum_%dcm.root",start_pos+2*i),"recreate");
     data3[i] = new TTree("tree","tree");
-    data3[i]->Branch("ADC",&ADC_sum[i],"ADC/D");  //Branch(branchname, &value);
+    data3[i]->ㅌㅊBranch("ADC",&ADC_sum[i],"ADC/D");  //Branch(branchname, &value);
     
   }
 

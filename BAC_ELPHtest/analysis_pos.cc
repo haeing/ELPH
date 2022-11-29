@@ -1,6 +1,6 @@
 //Y position : -35 -23 -11 -10 0 12
 
-Int_t y_pos =0;
+Int_t y_pos =-35;
 
 void analysis_pos(){
   //gStyle -> SetOptFit(1);
@@ -522,6 +522,7 @@ void analysis_pos(){
   Double_t pass_inda;
   Int_t tot_evt[N];
   Int_t evt_suma[N];
+  Int_t evt_sum_cuta[N];
   Int_t evt_inda[N];
   Int_t pass_t;
   
@@ -530,6 +531,7 @@ void analysis_pos(){
     tot_evt[i] = 0;
     evt_suma[i] = 0;
     evt_inda[i] = 0;
+    evt_sum_cuta[i] = 0;
     for(int n=0;n<tot[i];n++){
       data_po[i]->GetEntry(n);
       numpho = 0;
@@ -562,6 +564,7 @@ void analysis_pos(){
 	      hist_sumt_cut[i]->Fill(TDCs[i][0][0]);
 	    }
 	    //}
+	    if(numpho_sum>5)evt_sum_cuta[i]+=1;
 	  }
 	
 	  for(int j=0;j<4;j++){
@@ -701,6 +704,8 @@ void analysis_pos(){
     npe_error[i] = f_suma[i]->GetParError(1);
     x_error[i] = 0.05;
   }
+
+  for(int i=0;i<N;i++)cout<<"Efficiency by cutting ADC histogram : "<<1.0*evt_sum_cuta[i]/tot_evt[i]<<endl;
 
   
 
