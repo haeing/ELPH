@@ -102,15 +102,17 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   blacksheet->AddElement(H,2);
 
   
-  /*
+
   G4Material *Mylar = new G4Material("Mylar", 0.91*g/cm3, 1);
   Mylar->AddElement(AlE,1);
-  */
+  
 
+  /*
   G4Material *Mylar = new G4Material("Mylar", 1.39*g/cm3, 3);
   Mylar->AddElement(C, 5);
   Mylar->AddElement(H, 4);
   Mylar->AddElement(O, 2);
+  */
 
 
   
@@ -145,7 +147,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   G4MaterialPropertiesTable* prop_aerogel1 = new G4MaterialPropertiesTable();
 
 
-  G4double factor = 10;
+  G4double factor = 15;
 
   G4double aerogel1_ep[] = {1.3*eV,7.*eV};
   G4double aerogel_ep[] = {1.3*eV,1.56*eV,1.68*eV,1.84*eV,2.06*eV,2.26*eV,2.54*eV,2.90*eV,3.10*eV,3.28*eV,3.94*eV,4.94*eV,7.0*eV};
@@ -229,6 +231,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   blacksheet->SetMaterialPropertiesTable(prop_bs);
 
 
+  /*
 
   //Checking Scintillation from Mylar
   G4double mylar_ep[] = {1.3*eV,7.*eV};
@@ -260,7 +263,8 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   prop_mylar->AddConstProperty("SLOWTIMECONSTANT",2.8*ns);
   prop_mylar->AddConstProperty("YIELDRATIO",0.8);
   Mylar->SetMaterialPropertiesTable(prop_mylar);
-  /*
+  */
+  
   //Mylar property
   G4double mylar_ep[]={1.4*eV,1.48*eV,1.52*eV,1.56*eV,1.6*eV,1.7*eV,1.8*eV,1.9*eV,2*eV,2.2*eV,2.4*eV,2.6*eV,2.8*eV,3*eV,3.4*eV,3.8*eV,4*eV,5*eV,6*eV,7*eV};
 
@@ -279,7 +283,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   prop_mylar->AddProperty("IMAGINARYRINDEX",mylar_ep,mylar_ima,numentries_mylar)->SetSpline(true);
   prop_mylar->AddProperty("ABSLENGTH",mylar_ep1,mylar_abs,2)->SetSpline(true);
   Mylar->SetMaterialPropertiesTable(prop_mylar);
-  */
+
 
   
   
@@ -333,7 +337,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   G4double Aeroy = 125*mm+10*mm;   //For the exact position information of parabola
 
 
-  G4int numRZ = 10;
+  G4int numRZ = 15;
   //G4int numRZ = 150;
   
   G4double win_thick = 1*mm;
@@ -403,8 +407,12 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
 
   G4double p = 36;
   for(int i=0;i<numRZ;i++){
-    x[i] = i*15;
-    x_out[i] = (i*15)+0.002;
+
+    x[i] = i*10;
+    x_out[i] = (i*10)+0.002;
+    
+    //x[i] = i;
+    //x_out[i] = i+0.002;
     y[i] = x[i]*x[i]/(4*p);
       
   }
@@ -539,6 +547,8 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
 
   
 
+
+  /*
   //For checking scintillation from the mylar
   G4OpticalSurface* surface_mylar = new G4OpticalSurface("surface_mylar");
   surface_mylar->SetType(dielectric_dielectric);
@@ -569,8 +579,9 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   new G4LogicalSkinSurface("mylar_surface",SideLW,surface_mylar);
   new G4LogicalSkinSurface("mylar_surface",BottomLW,surface_mylar);
   new G4LogicalSkinSurface("mylar_surface",BehindLW,surface_mylar);
+  */
   
-  /*
+  
   //mylar_al surface-------------------
   G4OpticalSurface* surface_mylar = new G4OpticalSurface("surface_mylar");
   surface_mylar->SetType(dielectric_metal);
@@ -598,7 +609,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   new G4LogicalSkinSurface("mylar_surface",BottomLW,surface_mylar);
   new G4LogicalSkinSurface("mylar_surface",BehindLW,surface_mylar);
 
-  */
+
 
 
 

@@ -1,13 +1,13 @@
 //Y position : -35 -23 -11 -10 0 12
 
-Int_t y_pos =-35;
+Int_t y_pos =0;
 
 void analysis_pos(){
   //gStyle -> SetOptFit(1);
   gStyle -> SetOptStat(0);
   
   TFile *file_pe;
-  if(y_pos == 12 ||y_pos == 0||y_pos ==-10)file_pe = new TFile("../../ELPH_data/exp_data/run00333.root","read");
+  if(y_pos==13||y_pos == 12 ||y_pos == 0||y_pos ==-10)file_pe = new TFile("../../ELPH_data/exp_data/run00333.root","read");
   else if(y_pos ==-35 || y_pos ==-23 ||y_pos ==-11)file_pe = new TFile("../../ELPH_data/exp_data/run00079.root","read");
   
   Int_t N;  //x position
@@ -18,6 +18,7 @@ void analysis_pos(){
   else if(y_pos ==-23)N=7;
   else if(y_pos ==-35)N=11;
   else if(y_pos == 12)N=5;
+  else if(y_pos ==13) N=1;
   
   Int_t att = 1;
   
@@ -40,7 +41,8 @@ void analysis_pos(){
   }
 
   Double_t pe_sum;
-  
+
+
   for(int n=0;n<total_pe;n++){
     data_pe->GetEntry(n);
     pe_sum = 0;
@@ -92,6 +94,8 @@ void analysis_pos(){
     x_pos[3] = 2;
     x_pos[4] = 4;
   }
+
+  else if(y_pos==13)x_pos[0]=0;
     
     
 
@@ -138,6 +142,8 @@ void analysis_pos(){
   TH2D *ind_sum[N];
 
   TH2D *sumt_2d[N];
+
+  TH1D *hist_Ta_out[N][4];
 
   TF1 *f_a[N][4];
   TF1 *f_t[N][4];
@@ -236,12 +242,12 @@ void analysis_pos(){
   }
 
   else if(y_pos==12){
-    file_po[0] = new TFile("../../ELPH_data/exp_data/run00328.root","read"); //-6
-    file_po[1] = new TFile("../../ELPH_data/exp_data/run00329.root","read"); //-4
-    file_po[2] = new TFile("../../ELPH_data/exp_data/run00330.root","read"); //-2
-    file_po[3] = new TFile("../../ELPH_data/exp_data/run00326.root","read"); //0
-    file_po[4] = new TFile("../../ELPH_data/exp_data/run00331.root","read"); //2
-    file_po[5] = new TFile("../../ELPH_data/exp_data/run00332.root","read"); //4
+    //file_po[0] = new TFile("../../ELPH_data/exp_data/run00328.root","read"); //-6
+    file_po[0] = new TFile("../../ELPH_data/exp_data/run00329.root","read"); //-4
+    file_po[1] = new TFile("../../ELPH_data/exp_data/run00330.root","read"); //-2
+    file_po[2] = new TFile("../../ELPH_data/exp_data/run00326.root","read"); //0
+    file_po[3] = new TFile("../../ELPH_data/exp_data/run00331.root","read"); //2
+    file_po[4] = new TFile("../../ELPH_data/exp_data/run00332.root","read"); //4
 
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
@@ -249,6 +255,17 @@ void analysis_pos(){
       }
     }
   }
+
+  else if(y_pos==13){
+    file_po[0] = new TFile("../../ELPH_data/exp_data/run00326.root","read"); //0
+
+    for(int i=0;i<N;i++){
+      for(int j=0;j<att;j++){
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_cal_att/elph_221020_%dmm_12mm.root",x_pos[i]*10),"read");
+      }
+    }
+  }
+
   
     
 
@@ -272,7 +289,8 @@ void analysis_pos(){
     tot[i] = data_po[i]->GetEntries();
 
     for(int j=0;j<4;j++){
-      hist_Ta[i][j] = new TH1D(Form("hist_T%da_%dcm",j+4,x_pos[i]),Form("hist_T%da_%dcm",j+4,x_pos[i]),450,0,2000);
+      hist_Ta[i][j] = new TH1D(Form("hist_Ta%d_%dcm",j+4,x_pos[i]),Form("hist_Ta%d_%dcm",j+4,x_pos[i]),450,0,2000);
+      hist_Ta_out[i][j] = new TH1D(Form("hist_Ta_out_%d_%dcm",j+4,x_pos[i]),Form("hist_Ta_out_%d_%dcm",j+4,x_pos[i]),450,0,2000);
       hist_Tt[i][j] = new TH1D(Form("hist_T%dt_%dcm",j+4,x_pos[i]),Form("hist_T%dt_%dcm",j+4,x_pos[i]),250,600,850);
 
       hist_Ta_cut[i][j] = new TH1D(Form("hist_T%da_%dcm_cut",j+4,x_pos[i]),Form("hist_T%da_%dcm_cut",j+4,x_pos[i]),450,0,2000);
@@ -304,9 +322,11 @@ void analysis_pos(){
     sumt_2d[i] = new TH2D(Form("sumt_2d%d",i),Form("sumt_2d%d",i),500,0,1500,500,0,1500);
     
 
-    f_inda[i] = new TF1(Form("f_inda_%dcm",x_pos[i]),"gaus(0)",-10,100);
+    if(TMath::Abs(x_pos[i])<=5)f_inda[i] = new TF1(Form("f_inda_%dcm",x_pos[i]),"gaus(0)",-10,100);
+    else if(TMath::Abs(x_pos[i])>5)f_inda[i] = new TF1(Form("f_inda_%dcm",x_pos[i]),"[0]*TMath::Poisson(x,[1])",0,100);
     f_sumt[i] = new TF1(Form("f_sumt_%dcm",x_pos[i]),"gaus(0)",0,1500);
-    f_suma[i] = new TF1(Form("f_suma_%dcm",x_pos[i]),"gaus(0)",-10,100);
+    if(TMath::Abs(x_pos[i])<=5)f_suma[i] = new TF1(Form("f_suma_%dcm",x_pos[i]),"gaus(0)",-10,100);
+    else if(TMath::Abs(x_pos[i])>5)f_suma[i] = new TF1(Form("f_suma_%dcm",x_pos[i]),"[0]*TMath::Poisson(x,[1])*TMath::Gaus(x,[2])",0,100);
 
     for(int j=0;j<att;j++){
       f_simul[i][j] = new TF1(Form("f_simul_%dcm_%d",x_pos[i],att_start+j*50),"gaus(0)",-10,100);
@@ -447,7 +467,7 @@ void analysis_pos(){
 	  ind_sum[i]->Fill(rawadc,ADCs[i][0]-parameter_pe[4][1]);
 	}
       }
-      if(y_pos==12){
+      else if(y_pos==12){
 	hist_suma[i]->Fill((ADCs[i][0]-parameter_pe[4][1])/one_photon);
 	hist_sumt[i]->Fill(TDCs[i][0][0]);
 	for(int j=0;j<4;j++){
@@ -472,7 +492,14 @@ void analysis_pos(){
   for(int i=0;i<N;i++){
     c3->cd(i+1);
     hist_suma[i]->SetLineColor(kBlack);
-    if(y_pos!=12)hist_suma[i]->Fit(f_suma[i],"Q","",-10,60);
+    if(y_pos!=12){
+      if(TMath::Abs(x_pos[i]<=5))hist_suma[i]->Fit(f_suma[i],"","",-10,60);
+      else if(TMath::Abs(x_pos[i]>5)){
+	//f_suma[i]->SetParLimits(0,11000,12000);
+	//f_suma[i]->SetParLimits(1,2,2.5);
+	hist_suma[i]->Fit(f_suma[i],"","",0,50);
+      }
+    }
     else if(y_pos==12){
       if(x_pos[i]!=-4)hist_suma[i]->Fit(f_suma[i],"Q","",0,60);
       else if(x_pos[i]==-4)hist_suma[i]->Fit(f_suma[i],"Q","",10,60);
@@ -516,7 +543,8 @@ void analysis_pos(){
     c4->cd(i+1);
     ind_sum[i]->Draw("colz");
   }
- 
+
+  auto eff = new TEfficiency("eff","Efficiency;X [mm];Efficiency",100,-60,70);
   
   Double_t numpho_sum;
   Double_t pass_inda;
@@ -525,6 +553,7 @@ void analysis_pos(){
   Int_t evt_sum_cuta[N];
   Int_t evt_inda[N];
   Int_t pass_t;
+  Bool_t bPassed = 0;
   
   //Determine ADC cut
   for(int i=0;i<N;i++){
@@ -561,11 +590,16 @@ void analysis_pos(){
 	    if(pass_t==1){
 	      evt_suma[i]+=1;
 	      hist_suma_cut[i]->Fill(numpho_sum);
+	      for(int j=0;j<4;j++)hist_Ta_out[i][j]->Fill(Ta[i][j][0]);
 	      hist_sumt_cut[i]->Fill(TDCs[i][0][0]);
+	      bPassed=1;
 	    }
+	    else if(pass_t!=1)bPassed=0;
 	    //}
 	    if(numpho_sum>5)evt_sum_cuta[i]+=1;
 	  }
+	  else{bPassed=0;}
+	  eff->Fill(bPassed,x_pos[i]*10.0);
 	
 	  for(int j=0;j<4;j++){
 	    if(ADCi[i][j]<3840)pass_inda+=1;
@@ -615,8 +649,28 @@ void analysis_pos(){
   }
 
 
+  TCanvas *c_eff = new TCanvas("c_eff","Efficiency using TEff",800,650);
+  c_eff->cd();
+  eff->Draw("");
   
 
+  TCanvas *c1_1 = new TCanvas("c1_1","Trigger counters ADC histogram",800,650);
+  c1_1->Divide(4,N);
+  
+  for(int i=0;i<N;i++){
+    for(int j=0;j<4;j++){
+      c1_1->cd(4*i+j+1);
+      gPad->SetLogy();
+      hist_Ta[i][j]->SetLineColor(kBlack);
+      hist_Ta[i][j]->Draw();
+
+      hist_Ta_out[i][j]->SetLineColor(kRed);
+      hist_Ta_out[i][j]->SetFillColor(kRed);
+      hist_Ta_out[i][j]->SetFillStyle(3001);
+      hist_Ta_out[i][j]->Draw("sames");
+      
+    }
+  }
 
 
   TCanvas *c5 = new TCanvas("c5","BAC Sum ADC histogram",800,650);
@@ -796,12 +850,17 @@ void analysis_pos(){
   eff_sum->Draw("AP");
 
 
+  
+
   Double_t mean[N];
   Double_t sigma[N];
+  Double_t error[N];
   
   Double_t simul_mean[N];
   Double_t simul_sigma[N];
+  Double_t simul_error[N];
   Int_t x_position[N];
+
 
 
 
@@ -812,22 +871,30 @@ void analysis_pos(){
   tree->Branch("x_position",x_position,"x_position[N]/I");
   tree->Branch("mean",mean,"mean[N]/D");
   tree->Branch("sigma",sigma,"sigma[N]/D");
+  tree->Branch("error",error,"error[N]/D");
   tree->Branch("simul_mean",simul_mean,"simul_mean[N]/D");
   tree->Branch("simul_sigma",simul_sigma,"simul_sigma[N]/D");
-  tree->Branch("efficiency",effi_suma,"efficiency[N]/D");
-  tree->Branch("effi_error",effi_suma_err,"effi_error[N]/D");
+  tree->Branch("simul_error",simul_error,"simul_error[N]/D");
+  if(y_pos!=12){
+    tree->Branch("total_event",tot_evt,"total_event[N]/I");
+    tree->Branch("selected_event",evt_suma,"selected_event[N]/I");
+  }
 
   for(int i=0;i<N;i++){
     x_position[i] = x_pos[i];
     mean[i] = pa_suma[i][1];
     sigma[i] = pa_suma[i][2];
+    error[i] = f_suma[i]->GetParError(1);
     
     simul_mean[i] = pa_simul[i][0][1];
     simul_sigma[i] = pa_simul[i][0][2];
+    simul_error[i] = f_simul[i][0]->GetParError(1);
+
     
   }
   tree->Fill();
   tree->Write();
+  if(y_pos!=12)eff->Write();
   file_save->Close();
   
  

@@ -17,14 +17,15 @@ void npe_picture(){
   Double_t sigma[F][11];
   Double_t simul_mean[F][11];
   Double_t simul_sigma[F][11];
-  Double_t efficiency[F][11];
-  Double_t effi_error[F][11];
+  Int_t total_event[F][11];
+  Int_t selected_event[F][11];
 
   TGraphErrors *npe[F];
   TGraphErrors *npe_simul[F];
-  TGraphErrors *eff[F];
   auto mg_npe = new TMultiGraph();
   auto mg_eff = new TMultiGraph();
+
+  TEfficiency* eff[F];
 
   for(int i=0;i<F;i++){
     file[i] = new TFile(Form("parameter_%d.root",y_pos[i]),"read");
@@ -35,16 +36,16 @@ void npe_picture(){
     tree[i]->SetBranchAddress("sigma",sigma[i]);
     tree[i]->SetBranchAddress("simul_mean",simul_mean[i]);
     tree[i]->SetBranchAddress("simul_sigma",simul_sigma[i]);
-    tree[i]->SetBranchAddress("efficiency",efficiency[i]);
-    tree[i]->SetBranchAddress("effi_error",effi_error[i]);
+    tree[i]->SetBranchAddress("total_event",total_event[i]);
+    tree[i]->SetBranchAddress("selected_event",selected_event[i]);
     tree[i]->GetEntry(0);
     Double_t x_pos[N];
     Double_t pa_mean[N];
     Double_t pa_sigma[N];
     Double_t pa_si_mean[N];
     Double_t pa_si_sigma[N];
-    Double_t pa_effi[N];
-    Double_t pa_effi_err[N];
+    Double_t pa_tot[N];
+    Double_t pa_selected[N];
     Double_t x_err[N];
     for(int j=0;j<N;j++){
       x_pos[j] = 10.0*x_position[i][j];
@@ -53,8 +54,8 @@ void npe_picture(){
       pa_sigma[j] = sigma[i][j];
       pa_si_mean[j] = simul_mean[i][j];
       pa_si_sigma[j] = simul_sigma[i][j];
-      pa_effi[j] = efficiency[i][j];
-      pa_effi_err[j] = effi_error[i][j];
+      pa_tot[j] = total_event[i][j];
+      pa_selected[j] = selected_event[i][j];
     }
     npe[i] = new TGraphErrors(N,x_pos,pa_mean,x_err,pa_sigma);
     npe[i]->SetMarkerStyle(24);
@@ -68,7 +69,9 @@ void npe_picture(){
     npe_simul[i]->SetMarkerColor(kBlue);
     npe_simul[i]->SetLineColor(kBlue);
 
-    eff[i]= new TGraphErrors(N,x_pos,pa_effi,x_err,pa_effi_err);
+    //eff[i]= new TGraphErrors(N,x_pos,pa_effi,x_err,pa_effi_err);
+    eff[i]= new TEfficiency("eff","Efficiency;X [mm];Efficiency",10,0,1);
+    //eff[i]= new TEfficiency(pa_selected[i],pa_tot[i]);
     eff[i]->SetMarkerStyle(24);
     eff[i]->SetMarkerSize(1.5);
     
@@ -78,7 +81,7 @@ void npe_picture(){
     mg_npe->Add(npe[i]);
     mg_npe->Add(npe_simul[i]);
 
-    mg_eff->Add(eff[i]);
+    //mg_eff->Add(eff[i]);
     
   }
 
@@ -112,8 +115,10 @@ void npe_picture(){
 
   TCanvas *c2 = new TCanvas("c2","c2",800,650);
   c2->cd();
-  mg_eff->SetTitle("Efficiency;X [mm];Efficiency");
-  mg_eff->Draw("AP");
+  eff[0]->SetTitle("Efficiency;X [mm];Efficiency");
+  eff[0]->Draw("");
+  eff[1]->Draw("same");
+  eff[2]->Draw("same");
   le_e->Draw();
   
     
