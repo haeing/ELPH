@@ -107,12 +107,17 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   Mylar->AddElement(AlE,1);
   
 
-  /*
-  G4Material *Mylar = new G4Material("Mylar", 1.39*g/cm3, 3);
-  Mylar->AddElement(C, 5);
-  Mylar->AddElement(H, 4);
-  Mylar->AddElement(O, 2);
-  */
+
+  G4Material *Film = new G4Material("Film", 1.39*g/cm3, 3);
+  Film->AddElement(C, 5);
+  Film->AddElement(H, 4);
+  Film->AddElement(O, 2);
+
+  G4Material *Polystyrene = new G4Material("Polystyrene",1*g/cm3,2);
+  Polystyrene->AddElement(C,8);
+  Polystyrene->AddElement(H,8);
+  
+
 
 
   
@@ -147,7 +152,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   G4MaterialPropertiesTable* prop_aerogel1 = new G4MaterialPropertiesTable();
 
 
-  G4double factor = 15;
+  G4double factor = 8;
 
   G4double aerogel1_ep[] = {1.3*eV,7.*eV};
   G4double aerogel_ep[] = {1.3*eV,1.56*eV,1.68*eV,1.84*eV,2.06*eV,2.26*eV,2.54*eV,2.90*eV,3.10*eV,3.28*eV,3.94*eV,4.94*eV,7.0*eV};
@@ -231,39 +236,58 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   blacksheet->SetMaterialPropertiesTable(prop_bs);
 
 
-  /*
+
 
   //Checking Scintillation from Mylar
-  G4double mylar_ep[] = {1.3*eV,7.*eV};
-  G4double mylar_rindex[] = {1.63,1.70};
-  G4double mylar_abs[] = {1*cm,1*cm};
+  G4double film_ep[] = {1.3*eV,7.*eV};
+  G4double film_rindex[] = {1.63,1.70};
+  G4double film_abs[] = {1*cm,1*cm};
 
-  G4double mylar_ep1[] = {1.24*eV,7.*eV};
+  //G4double film_ep[] = {1.24*eV,7.*eV};
 
-  G4double scin_ep1[] = {2.18*eV,2.21*eV,2.25*eV,2.28*eV,2.32*eV,2.36*eV,2.39*eV,2.41*eV,2.44*eV,2.46*eV,2.49*eV,2.51*eV,
+  G4double film_ep1[] = {2.18*eV,2.21*eV,2.25*eV,2.28*eV,2.32*eV,2.36*eV,2.39*eV,2.41*eV,2.44*eV,2.46*eV,2.49*eV,2.51*eV,
     2.54*eV,2.55*eV,2.58*eV,2.61*eV,2.63*eV,2.64*eV,2.66*eV,2.68*eV,2.7*eV,2.72*eV,2.73*eV,2.75*eV,2.77*eV,2.79*eV,
     2.82*eV,2.85*eV,2.87*eV,2.89*eV,2.91*eV,2.93*eV,2.95*eV,2.96*eV,2.965*eV,2.97*eV,2.99*eV,3*eV,3.02*eV,3.03*eV,
     3.05*eV,3.06*eV,3.08*eV,3.09*eV,3.12*eV,3.15*eV,3.2*eV};
-  G4double scin_fast[]={0.00014325,0.0015758,0.00329528,0.00587386,0.0080231,0.01060168,0.01862478,0.02134662,
+  G4double film_fast[]={0.00014325,0.0015758,0.00329528,0.00587386,0.0080231,0.01060168,0.01862478,0.02134662,
     0.02363911,0.0265042,0.02908321,0.03123203,0.03366778,0.0358166,0.03739239,0.03939838,0.04054442,0.04169045,
     0.04212022,0.0415472,0.04068767,0.03882536,0.03681938,0.03495707,0.03280783,0.03123203,0.02893995,0.02636095,
     0.02406888,0.02163313,0.01991407,0.01833827,0.01776483,0.01590252,0.01446998,0.01318069,0.01146121,0.01017192,
     0.00902588,0.00773659,0.00644688,0.00515759,0.00458457,0.00329528,0.00214882,0.00143255,0.00085953,0.00042976};
 
-  const G4int numentries_scin1 = sizeof(scin_ep1)/sizeof(G4double);
-  assert (sizeof(scin_ep1) == sizeof(scin_fast));
-  G4MaterialPropertiesTable* prop_mylar = new G4MaterialPropertiesTable();
-  prop_mylar->AddProperty("RINDEX",mylar_ep,mylar_rindex,2)->SetSpline(true);
-  prop_mylar->AddProperty("ABSLENGTH",mylar_ep,mylar_abs,2)->SetSpline(true);
-  prop_mylar->AddProperty("FASTCOMPONENT",scin_ep1,scin_fast,numentries_scin1)->SetSpline(true);
-  prop_mylar->AddProperty("SLOWCOMPONENT",scin_ep1,scin_fast,numentries_scin1)->SetSpline(true);
-  prop_mylar->AddConstProperty("SCINTILLATIONYIELD",10000./MeV);
-  prop_mylar->AddConstProperty("RESOLUTIONSCALE",1.0);
-  prop_mylar->AddConstProperty("FASTTIMECONSTANT", 1.*ns);
-  prop_mylar->AddConstProperty("SLOWTIMECONSTANT",2.8*ns);
-  prop_mylar->AddConstProperty("YIELDRATIO",0.8);
-  Mylar->SetMaterialPropertiesTable(prop_mylar);
-  */
+  const G4int numentries_scin1 = sizeof(film_ep1)/sizeof(G4double);
+  assert (sizeof(film_ep1) == sizeof(film_fast));
+  G4MaterialPropertiesTable* prop_film = new G4MaterialPropertiesTable();
+  prop_film->AddProperty("RINDEX",film_ep,film_rindex,2)->SetSpline(true);
+  prop_film->AddProperty("ABSLENGTH",film_ep,film_abs,2)->SetSpline(true);
+  prop_film->AddProperty("FASTCOMPONENT",film_ep1,film_fast,numentries_scin1)->SetSpline(true);
+  prop_film->AddProperty("SLOWCOMPONENT",film_ep1,film_fast,numentries_scin1)->SetSpline(true);
+  prop_film->AddConstProperty("SCINTILLATIONYIELD",10000./MeV);
+  prop_film->AddConstProperty("RESOLUTIONSCALE",1.0);
+  prop_film->AddConstProperty("FASTTIMECONSTANT", 1.*ns);
+  prop_film->AddConstProperty("SLOWTIMECONSTANT",2.8*ns);
+  prop_film->AddConstProperty("YIELDRATIO",0.8);
+  Film->SetMaterialPropertiesTable(prop_film);
+
+
+  //Polystyrene property
+  G4double poly_ep[] = {1.3*eV,7.*eV};
+  G4double poly_rindex[] = {1.6,1.6};
+  G4double poly_abs[] = {1.0e-9*cm,1.0e-9*cm};
+  G4MaterialPropertiesTable* prop_poly = new G4MaterialPropertiesTable();
+  prop_poly->AddProperty("RINDEX",poly_ep,poly_rindex,2)->SetSpline(true);
+  prop_poly->AddProperty("ABSLENGTH",poly_ep,poly_abs,2)->SetSpline(true);
+  prop_poly->AddProperty("FASTCOMPONENT",film_ep1,film_fast,numentries_scin1)->SetSpline(true);
+  prop_poly->AddProperty("SLOWCOMPONENT",film_ep1,film_fast,numentries_scin1)->SetSpline(true);
+  prop_poly->AddConstProperty("SCINTILLATIONYIELD",10000./MeV);
+  prop_poly->AddConstProperty("RESOLUTIONSCALE",1.0);
+  prop_poly->AddConstProperty("FASTTIMECONSTANT", 1.*ns);
+  prop_poly->AddConstProperty("SLOWTIMECONSTANT",2.8*ns);
+  prop_poly->AddConstProperty("YIELDRATIO",0.8);
+  Polystyrene->SetMaterialPropertiesTable(prop_poly);
+  
+  
+
   
   //Mylar property
   G4double mylar_ep[]={1.4*eV,1.48*eV,1.52*eV,1.56*eV,1.6*eV,1.7*eV,1.8*eV,1.9*eV,2*eV,2.2*eV,2.4*eV,2.6*eV,2.8*eV,3*eV,3.4*eV,3.8*eV,4*eV,5*eV,6*eV,7*eV};
@@ -350,8 +374,8 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
 
 
   //lower position
-  //G4double lower = 23*mm; //small Aerogel supporting structure
-  G4double lower = 0*mm;   //Large Aerogel supporting structure
+  G4double lower = 23*mm; //small Aerogel supporting structure
+  //G4double lower = 0*mm;   //Large Aerogel supporting structure
 
   
   //Aerogel
@@ -371,10 +395,12 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
 
 
   //ELPH reflector behind the aerogel
-  G4Box* Behind = new G4Box("Behind",Aerox_real/2,Aeroy_real/2,0.001*mm);
+  G4Box* Behind = new G4Box("Behind",Aerox_real/2,Aeroy_real/2,0.05*mm);
   BehindLW = new G4LogicalVolume(Behind,Mylar,"Behind");
+  Behind_filmLW = new G4LogicalVolume(Behind,Film,"Behind_film");
 
-  new G4PVPlacement(0,G4ThreeVector(0,10*mm-lower,-Aeroz_real/2-0.001*mm+5*mm),BehindLW,"Behind",logicWorld,false,0,checkOverlaps);
+  new G4PVPlacement(0,G4ThreeVector(0,10*mm-lower,-Aeroz_real/2-0.05*mm+5*mm),Behind_filmLW,"Behind_film",logicWorld,false,0,checkOverlaps);
+  new G4PVPlacement(0,G4ThreeVector(0,10*mm-lower,-Aeroz_real/2-0.15*mm+5*mm),BehindLW,"Behind",logicWorld,false,0,checkOverlaps);
 
   //ELPH reflector bottom
 
@@ -394,7 +420,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   G4Box *Boxwin3 = new G4Box("Boxwin3",Aerox_real/2-5*mm,Aeroy_real,Aeroz_real/2-5*mm/2);
   G4SubtractionSolid* Holder = new G4SubtractionSolid("Holder",Box3,Boxwin3,0,G4ThreeVector(0,0,0));
     
-  HolderLW = new G4LogicalVolume(Holder,blacksheet,"Holder");
+  HolderLW = new G4LogicalVolume(Holder,Polystyrene,"Holder");
   new G4PVPlacement(0,G4ThreeVector(0*mm,10*mm-lower,5*mm+5*mm/2),HolderLW,"Holder",logicWorld,false,0,checkOverlaps);
     
 
@@ -409,7 +435,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   for(int i=0;i<numRZ;i++){
 
     x[i] = i*10;
-    x_out[i] = (i*10)+0.002;
+    x_out[i] = (i*10)+0.15;
     
     //x[i] = i;
     //x_out[i] = i+0.002;
@@ -428,6 +454,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   G4double scaleA=1., scaleB=1.;
   G4ExtrudedSolid* Reflect = new G4ExtrudedSolid("Reflect",poly,15.5*cm/2,offsetA,scaleA, offsetB, scaleB);
   ReflectLW = new G4LogicalVolume(Reflect,Mylar,"Reflect");
+  FilmLW = new G4LogicalVolume(Reflect,Film,"Film");
   G4RotationMatrix *rotY = new G4RotationMatrix();
   rotY->rotateY(+90*degree);
   rotY->rotateZ(+60*degree);
@@ -435,9 +462,9 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   G4double pary = Aeroy/2+5*cm;
   G4double parz = Aeroz_real/2+mppc_place+5*cm;
 
-  new G4PVPlacement(rotY,G4ThreeVector(0,pary,parz),ReflectLW,"Reflect",logicWorld,false,0,checkOverlaps);
-  new G4PVPlacement(rotY,G4ThreeVector(0,pary,parz+0.003*mm),ReflectLW,"Reflect",logicWorld,false,0,checkOverlaps);
-  new G4PVPlacement(rotY,G4ThreeVector(0,pary,parz+0.006*mm),ReflectLW,"Reflect",logicWorld,false,0,checkOverlaps);
+  //new G4PVPlacement(rotY,G4ThreeVector(0,pary,parz),FilmLW,"Film",logicWorld,false,0,checkOverlaps);
+  new G4PVPlacement(rotY,G4ThreeVector(0,pary,parz),FilmLW,"Film",logicWorld,false,0,checkOverlaps);
+  new G4PVPlacement(rotY,G4ThreeVector(0,pary,parz+0.16*mm),ReflectLW,"Reflect",logicWorld,false,0,checkOverlaps);
 
     
 
@@ -546,6 +573,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   new G4LogicalSkinSurface("bs_surface",HolderLW,surface_bs);
 
   
+
 
 
   /*

@@ -1,6 +1,6 @@
 //Y position : -35 -23 -11 -10 0 12
 
-Int_t y_pos =0;
+Int_t y_pos =-10;
 
 void analysis_pos(){
   //gStyle -> SetOptFit(1);
@@ -169,7 +169,7 @@ void analysis_pos(){
 
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
-	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_cal_att/elph_221020_%dmm_0mm.root",x_pos[i]*10),"read");
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_scin/elph_221020_%dmm_0mm.root",x_pos[i]*10),"read");
       }
     }
   }
@@ -182,7 +182,7 @@ void analysis_pos(){
 
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
-	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_cal_att/elph_221020_%dmm_-10mm.root",x_pos[i]*10),"read");
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_scin/elph_221020_%dmm_-11mm.root",x_pos[i]*10),"read");
       }
     }
   }
@@ -199,7 +199,7 @@ void analysis_pos(){
 
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
-	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_cal_att/elph_221018_%dmm_-11mm.root",x_pos[i]*10),"read");
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_scin/elph_221020_%dmm_-11mm.root",x_pos[i]*10),"read");
       }
     }
   }
@@ -216,7 +216,7 @@ void analysis_pos(){
 
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
-	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_cal_att/elph_221018_%dmm_-23mm.root",x_pos[i]*10),"read");
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_scin/elph_221020_%dmm_-23mm.root",x_pos[i]*10),"read");
       }
     }
   }
@@ -236,7 +236,7 @@ void analysis_pos(){
 
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
-	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_cal_att/elph_221018_%dmm_-35mm.root",x_pos[i]*10),"read");
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_scin/elph_221020_%dmm_-35mm.root",x_pos[i]*10),"read");
       }
     }
   }
@@ -261,7 +261,7 @@ void analysis_pos(){
 
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
-	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_cal_att/elph_221020_%dmm_12mm.root",x_pos[i]*10),"read");
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_scin/elph_221020_%dmm_12mm.root",x_pos[i]*10),"read");
       }
     }
   }
@@ -326,10 +326,11 @@ void analysis_pos(){
     else if(TMath::Abs(x_pos[i])>5)f_inda[i] = new TF1(Form("f_inda_%dcm",x_pos[i]),"[0]*TMath::Poisson(x,[1])",0,100);
     f_sumt[i] = new TF1(Form("f_sumt_%dcm",x_pos[i]),"gaus(0)",0,1500);
     if(TMath::Abs(x_pos[i])<=5)f_suma[i] = new TF1(Form("f_suma_%dcm",x_pos[i]),"gaus(0)",-10,100);
-    else if(TMath::Abs(x_pos[i])>5)f_suma[i] = new TF1(Form("f_suma_%dcm",x_pos[i]),"[0]*TMath::Poisson(x,[1])*TMath::Gaus(x,[2])",0,100);
+    else if(TMath::Abs(x_pos[i])>5)f_suma[i] = new TF1(Form("f_suma_%dcm",x_pos[i]),"[0]*TMath::Poisson(x,[1])*TMath::Gaus(x,[2],[3])",-10,100);
 
     for(int j=0;j<att;j++){
-      f_simul[i][j] = new TF1(Form("f_simul_%dcm_%d",x_pos[i],att_start+j*50),"gaus(0)",-10,100);
+      if(TMath::Abs(x_pos[i])<=5)f_simul[i][j] = new TF1(Form("f_simul_%dcm_%d",x_pos[i],att_start+j*50),"gaus(0)",-10,100);
+      else if(TMath::Abs(x_pos[i])>5)f_simul[i][j] = new TF1(Form("f_simul_%dcm_%d",x_pos[i],att_start+j*50),"[0]*TMath::Poisson(x,[1])",0,10);
     }
   }
 
@@ -487,18 +488,22 @@ void analysis_pos(){
   
   TCanvas *c3 = new TCanvas("c3","BAC ADC of Ind and Sum");
   c3->Divide(N);
-  Double_t pa_suma[N][3];
+  //Double_t pa_suma[N][3];
+  Double_t pa_suma[N][4];
   Double_t pa_inda[N][3];
   for(int i=0;i<N;i++){
     c3->cd(i+1);
     hist_suma[i]->SetLineColor(kBlack);
     if(y_pos!=12){
-      if(TMath::Abs(x_pos[i]<=5))hist_suma[i]->Fit(f_suma[i],"","",-10,60);
-      else if(TMath::Abs(x_pos[i]>5)){
-	//f_suma[i]->SetParLimits(0,11000,12000);
-	//f_suma[i]->SetParLimits(1,2,2.5);
-	hist_suma[i]->Fit(f_suma[i],"","",0,50);
+      if(x_pos[i]==-6||x_pos[i]==6){
+	f_suma[i]->SetParLimits(0,5000,50000);
+	f_suma[i]->SetParLimits(1,0,5);
+	f_suma[i]->SetParLimits(2,0,5);
+	f_suma[i]->SetParLimits(3,0,100);
+	hist_suma[i]->Fit(f_suma[i],"","",0,25);
       }
+      else if(TMath::Abs(x_pos[i])<=5)hist_suma[i]->Fit(f_suma[i],"","",-10,60);
+      
     }
     else if(y_pos==12){
       if(x_pos[i]!=-4)hist_suma[i]->Fit(f_suma[i],"Q","",0,60);
@@ -789,12 +794,17 @@ void analysis_pos(){
     for(int j=0;j<att;j++){
       c9->cd(att*i+j+1);
       hist_simul[i][j]->SetTitle(Form("Sum ADC %d cm %d;ADC [Ch.];n",x_pos[i],att_start+50*j));
-      hist_simul[i][j]->Fit(f_simul[i][j],"","",-10,80);
+      if(TMath::Abs(x_pos[i])>5){
+	f_simul[i][j]->SetParLimits(0,5000,20000);
+	f_simul[i][j]->SetParLimits(1,0,3);
+	hist_simul[i][j]->Fit(f_simul[i][j],"","",0,10);
+      }
+      if(TMath::Abs(x_pos[i])<=5)hist_simul[i][j]->Fit(f_simul[i][j],"","",-10,80);
+      
 
       f_simul[i][j]->GetParameters(pa_simul[i][j]);
-      if(pa_simul[i][j][1]>=0)npe_pos_simul[j][i] = pa_simul[i][j][1];
+      npe_pos_simul[j][i] = pa_simul[i][j][1];
       //if(pa_simul[i][j][1]>=0)npe_pos_simul[j][i] = TMath::Abs(pa_simul[i][j][1]-pa_suma[i][1])/pa_suma[i][1];
-      else if(pa_simul[i][j][1]<0)npe_pos_simul[j][i]=0;
       npe_error_simul[j][i] = f_simul[i][j]->GetParError(1);
     }
   }
