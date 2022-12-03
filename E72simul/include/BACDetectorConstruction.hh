@@ -34,6 +34,7 @@ private:
   
   G4VPhysicalVolume* physWorld;
   G4VPhysicalVolume* physDetect;
+  //G4VPhysicalVolume* mppcphys;
 
 
   G4LogicalVolume* Aero1LW;
@@ -41,6 +42,7 @@ private:
   G4LogicalVolume* Aero3LW;
   G4LogicalVolume* HolderLW;
   G4LogicalVolume* BehindLW;
+  G4LogicalVolume* Ae_sideLW;
   G4LogicalVolume* Behind_filmLW;
   G4LogicalVolume* BottomLW;
   G4LogicalVolume* ReflectLW;

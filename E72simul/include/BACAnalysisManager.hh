@@ -13,9 +13,9 @@ class TFile;
 class TTree;
 class EvtVector4R;
 
-const int num_evtgen = 100000;
+const int num_evtgen = 500000;
 const int num_mppchit = 100000;
-const int num_aerohit = 100000;
+const int num_aerohit = 500000;
 
 class BACAnalysisManager
 {

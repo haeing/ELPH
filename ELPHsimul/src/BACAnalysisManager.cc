@@ -56,8 +56,8 @@ void BACAnalysisManager::BeginOfRun(const G4Run*)
   tree->Branch("nEvt",&nEvt, "nEvt/I");
   //tree->Branch("evtid",evtid,"evtid[nEvt]/I");
   //tree->Branch("evtpid",&evtpid,"evtpid/I");
-  tree->Branch("evtposx",&evtposx,"evtposx/D");
-  tree->Branch("evtposy",&evtposy,"evtposy/D");
+  //tree->Branch("evtposx",&evtposx,"evtposx/D");
+  //tree->Branch("evtposy",&evtposy,"evtposy/D");
   //tree->Branch("evtposz",&evtposz,"evtposz/D");
   //tree->Branch("evtpid",evtpid,"evtpid[nEvt]/I");
   tree->Branch("evtnumce",&evtnumce,"evtnumce/I");

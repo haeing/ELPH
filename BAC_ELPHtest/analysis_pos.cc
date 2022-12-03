@@ -1,6 +1,6 @@
 //Y position : -35 -23 -11 -10 0 12
 
-Int_t y_pos =-10;
+Int_t y_pos =12;
 
 void analysis_pos(){
   //gStyle -> SetOptFit(1);
@@ -169,7 +169,7 @@ void analysis_pos(){
 
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
-	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_scin/elph_221020_%dmm_0mm.root",x_pos[i]*10),"read");
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_acr/elph_221020_%dmm_0mm.root",x_pos[i]*10),"read");
       }
     }
   }
@@ -182,7 +182,7 @@ void analysis_pos(){
 
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
-	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_scin/elph_221020_%dmm_-11mm.root",x_pos[i]*10),"read");
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_acr/elph_221020_%dmm_-10mm.root",x_pos[i]*10),"read");
       }
     }
   }
@@ -199,7 +199,7 @@ void analysis_pos(){
 
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
-	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_scin/elph_221020_%dmm_-11mm.root",x_pos[i]*10),"read");
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_acr/elph_221020_%dmm_-11mm.root",x_pos[i]*10),"read");
       }
     }
   }
@@ -216,7 +216,7 @@ void analysis_pos(){
 
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
-	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_scin/elph_221020_%dmm_-23mm.root",x_pos[i]*10),"read");
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_acr/elph_221020_%dmm_-23mm.root",x_pos[i]*10),"read");
       }
     }
   }
@@ -236,7 +236,7 @@ void analysis_pos(){
 
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
-	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_scin/elph_221020_%dmm_-35mm.root",x_pos[i]*10),"read");
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_acr/elph_221020_%dmm_-35mm.root",x_pos[i]*10),"read");
       }
     }
   }
@@ -261,7 +261,7 @@ void analysis_pos(){
 
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
-	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_scin/elph_221020_%dmm_12mm.root",x_pos[i]*10),"read");
+	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_acr/elph_221020_%dmm_12mm.root",x_pos[i]*10),"read");
       }
     }
   }
@@ -778,7 +778,7 @@ void analysis_pos(){
 
   for(int i=0;i<N;i++){
     for(int j=0;j<att;j++){
-      for(int n=0;n<10000;n++){
+      for(int n=0;n<5000;n++){
 	data_simul[i][j]->GetEntry(n);
 	hist_simul[i][j]->Fill(nhmppc[i][j]);
       }
@@ -814,16 +814,16 @@ void analysis_pos(){
   TGraphErrors *npe[att];
   for(int i=0;i<att;i++){
     npe[i] = new TGraphErrors(N,x_pos_e,npe_pos_simul[i],x_error,npe_error_simul[i]);
-    npe[i]->SetMarkerStyle(24);
+    npe[i]->SetMarkerStyle(22);
     npe[i]->SetMarkerColor(2+i);
     npe[i]->SetLineColor(2+i);
-    npe[i]->SetMarkerSize(1);
+    npe[i]->SetMarkerSize(2);
   }
   
   npe0->SetMarkerStyle(24);
   npe0->SetMarkerColor(1);
   npe0->SetLineColor(1);
-  npe0->SetMarkerSize(1);
+  npe0->SetMarkerSize(2);
 
   auto mg_npe = new TMultiGraph();
   mg_npe->Add(npe0);
@@ -839,7 +839,7 @@ void analysis_pos(){
   
   TCanvas *c10 = new TCanvas("c10","Npe");
   c10->cd();
-  mg_npe->SetTitle("Npe per each position;X [cm];# of Photons");
+  mg_npe->SetTitle("Npe per each position;X [cm];N_{p.e.}");
   mg_npe->Draw("AP");
   le_s->Draw();
   

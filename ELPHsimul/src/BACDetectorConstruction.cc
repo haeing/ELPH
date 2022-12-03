@@ -235,6 +235,17 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   prop_bs->AddProperty("ABSLENGTH",bs_ep,bs_abs,2)->SetSpline(true);
   blacksheet->SetMaterialPropertiesTable(prop_bs);
 
+  //Acrylic property---------
+  G4MaterialPropertiesTable* prop_acr = new G4MaterialPropertiesTable();
+
+  G4double acr_ep[] = {1.3*eV,7.*eV};
+  G4double acr_abs[] = {1.0e-9*cm,1.0e-9*cm};
+  G4double acr_rindex[]={1.495,1.495};
+  
+  prop_acr->AddProperty("RINDEX",acr_ep,acr_rindex,2)->SetSpline(true);
+  prop_acr->AddProperty("ABSLENGTH",acr_ep,acr_abs,2)->SetSpline(true);
+  Acrylic->SetMaterialPropertiesTable(prop_acr);
+
 
 
 
@@ -374,8 +385,8 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
 
 
   //lower position
-  G4double lower = 23*mm; //small Aerogel supporting structure
-  //G4double lower = 0*mm;   //Large Aerogel supporting structure
+  //G4double lower = 23*mm; //small Aerogel supporting structure
+  G4double lower = 0*mm;   //Large Aerogel supporting structure
 
   
   //Aerogel
@@ -427,6 +438,8 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
 
 
   //Parabola
+
+  
   G4double x[numRZ];
   G4double y[numRZ];
   G4double x_out[numRZ];
@@ -453,6 +466,8 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   G4TwoVector offsetA(0.,0.), offsetB(0.,0.);
   G4double scaleA=1., scaleB=1.;
   G4ExtrudedSolid* Reflect = new G4ExtrudedSolid("Reflect",poly,15.5*cm/2,offsetA,scaleA, offsetB, scaleB);
+  
+
   ReflectLW = new G4LogicalVolume(Reflect,Mylar,"Reflect");
   FilmLW = new G4LogicalVolume(Reflect,Film,"Film");
   G4RotationMatrix *rotY = new G4RotationMatrix();
@@ -491,6 +506,11 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   G4RotationMatrix *rotM = new G4RotationMatrix();
   rotM->rotateX(90*degree+mppc_theta);
   G4double ml = 29;
+
+  G4Box* solidMPPC = new G4Box("MPPCWorld",75*mm,60*mm,mppc_thick/2);
+  G4LogicalVolume* mppcworld = new G4LogicalVolume(solidMPPC,Acrylic,"MPPCWorld");
+  new G4PVPlacement(rotM,G4ThreeVector(0*mm,Aeroy/2+mppc_place*1.5*TMath::Sin(mppc_theta)+3*cm,Aeroz_real/2+mppc_place*1.5*TMath::Cos(mppc_theta)-0.8*cm),mppcworld,"MPPC",logicWorld,false,0,checkOverlaps);
+  
   
   //E72 Real!! (n = 1.10)
 
@@ -504,7 +524,8 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   //ELPH condition!!!!!!!
      
   for(int i=0;i<4;i++){
-    new G4PVPlacement(rotM,G4ThreeVector(-(ml*1.5)*mm+(ml*i)*mm,Aeroy/2+mppc_place*1.5*TMath::Sin(mppc_theta)+3*cm,Aeroz_real/2+mppc_place*1.5*TMath::Cos(mppc_theta)-0.8*cm),MPPCLW,"MPPC",logicWorld,false,i+1,checkOverlaps);
+    //new G4PVPlacement(rotM,G4ThreeVector(-(ml*1.5)*mm+(ml*i)*mm,Aeroy/2+mppc_place*1.5*TMath::Sin(mppc_theta)+3*cm,Aeroz_real/2+mppc_place*1.5*TMath::Cos(mppc_theta)-0.8*cm),MPPCLW,"MPPC",logicWorld,false,i+1,checkOverlaps);
+    new G4PVPlacement(0,G4ThreeVector(-(ml*1.5)*mm+(ml*i)*mm,0,0),MPPCLW,"MPPC",mppcworld,false,i+1,checkOverlaps);
   }
 
   
@@ -618,7 +639,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   
   G4MaterialPropertiesTable* sp_mylar = new G4MaterialPropertiesTable();
   G4double mylar_reflec[] = {0.98,0.98};  //for metal, reflectivity is calculated using rindex, they use polarization, angle, energy
-  G4double mylar_effi[] = {1.0,1.0};
+  G4double mylar_effi[] = {0.9,0.9};
   //G4double mylar_specularLobe[] = {0.85,0.85};
   //G4double mylar_specularSpike[]={0.87,0.87};
   G4double mylar_specularLobe[] = {0.3,0.3};
@@ -639,7 +660,27 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
 
 
 
+  //Black Acrylic
+  G4OpticalSurface* surface_acrylic = new G4OpticalSurface("surface_acrylic");
+  surface_acrylic->SetType(dielectric_dielectric);
+  surface_acrylic->SetFinish(polishedfrontpainted);    
+  surface_acrylic->SetModel(unified);
+  
+  G4MaterialPropertiesTable* sp_acrylic = new G4MaterialPropertiesTable();
+  G4double acrylic_reflec[] = {0.3,0.3};
+  G4double acrylic_effi[] = {1,1};
+  G4double acrylic_specularLobe[] = {0.3,0.3};
+  G4double acrylic_specularSpike[] = {0.2,0.2};
+  sp_acrylic->AddProperty("REFLECTIVITY",air_ep,acrylic_reflec,2)->SetSpline(true);
+  //sp_acrylic->AddProperty("EFFICIENCY",air_ep,acrylic_effi,2)->SetSpline(true);
+  sp_mylar->AddProperty("SPECULARLOBECONSTANT",air_ep,acrylic_specularLobe,2)->SetSpline(true);
+  sp_mylar->AddProperty("SPECULARSPIKECONSTANT",air_ep,acrylic_specularSpike,2)->SetSpline(true);
 
+  surface_acrylic->SetMaterialPropertiesTable(sp_acrylic);
+  
+
+  new G4LogicalSkinSurface("acrylic_surface",mppcworld,surface_acrylic);
+  
 
 
   

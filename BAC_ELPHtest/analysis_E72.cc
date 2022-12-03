@@ -1,0 +1,64 @@
+void analysis_E72(){
+  Int_t X = 3;
+  Int_t Y = 7;
+  Int_t M = 4;
+  Int_t x_pos[X];
+  Int_t y_pos[Y];
+  Int_t mom[M];
+  for(int i=0;i<X;i++)x_pos[i] = -40+20*i;
+  y_pos[0] = -60;
+  y_pos[1] = -50;
+  y_pos[2] = -25;
+  y_pos[3] = 0;
+  y_pos[4] = 25;
+  y_pos[5] = 40;
+  y_pos[6] = 50;
+
+  for(int i=0;i<M;i++)mom[i] = 700+30*i;
+
+  TFile *file[X][Y][M];
+  TTree *tree[X][Y][M];
+
+  Int_t nhMppc[X][Y][M];
+  TH1D *hist_simul[X][Y][M];
+  TF1 *fit_simul[X][Y][M];
+
+  Double_t pa_simul[X][Y][M][3];
+  Double_t pa_error[X][Y][M];
+
+  //TGraphErrors *npe
+
+  TCanvas *c1[M];
+  for(int i=0;i<M;i++){
+    c1[i] = new TCanvas(Form("c1%d",i),"c1",800,650);
+    c1[i]->Divide(Y,X);
+  }
+
+  for(int i=0;i<X;i++){
+    for(int j=0;j<Y;j++){
+      for(int k=0;k<M;k++){
+	file[i][j][k] = new TFile(Form("../../ELPH_data/simul_E72/E72_%dmm_%dmm_momentum_%d.root",x_pos[i],y_pos[j],mom[k]),"read");
+	tree[i][j][k] = (TTree*)file[i][j][k]->Get("tree");
+	tree[i][j][k]->SetBranchAddress("nhMppc",&nhMppc[i][j][k]);
+	cout<<i<<j<<k<<endl;
+	hist_simul[i][j][k] = new TH1D(Form("simul%d%d%d",x_pos[i],y_pos[j],mom[k]),Form("simul%d%d%d",x_pos[i],y_pos[j],mom[k]),100,0,100);
+	fit_simul[i][j][k] = new TF1(Form("f_simul%d%d%d",x_pos[i],y_pos[j],mom[k]),"gaus(0)",0,100);
+	for(int n=0;n<5000;n++){
+	  tree[i][j][k]->GetEntry(n);
+	  hist_simul[i][j][k]->Fill(nhMppc[i][j][k]);
+	}
+	c1[k]->cd(Y*i+j+1);
+	hist_simul[i][j][k]->Fit(fit_simul[i][j][k],"","",0,100);
+	fit_simul[i][j][k]->GetParameters(pa_simul[i][j][k]);
+	pa_error[i][j][k] = fit_simul[i][j][k]->GetParError(1);
+	//file[i][j][k]->Close();
+	
+      }
+    }
+  }
+
+  
+
+	
+  
+}

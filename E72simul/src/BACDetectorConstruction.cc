@@ -383,9 +383,9 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   Aero2LW = new G4LogicalVolume(Aero2,Aerogel2,"Aero2");
   Aero3LW = new G4LogicalVolume(Aero3,Aerogel3,"Aero3");
 
-  new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,5*mm-Aeroz2/2-Aero_space-Aeroz1/2),Aero1LW,"Aero1",logicWorld,false,10,checkOverlaps);
-  new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,5*mm),Aero2LW,"Aero2",logicWorld,false,11,checkOverlaps);
-  new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,5*mm+Aeroz2/2+Aero_space+Aeroz3/2),Aero3LW,"Aero3",logicWorld,false,12,checkOverlaps);
+  new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,-Aeroz2/2-Aero_space-Aeroz1/2),Aero1LW,"Aero1",logicWorld,false,10,checkOverlaps);
+  new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,0*mm),Aero2LW,"Aero2",logicWorld,false,11,checkOverlaps);
+  new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,+Aeroz2/2+Aero_space+Aeroz3/2),Aero3LW,"Aero3",logicWorld,false,12,checkOverlaps);
 
   //new G4PVPlacement(0,G4ThreeVector(0*mm,10*mm-lower,5*mm),AeroLW,"Aero",logicWorld,false,0,checkOverlaps);
 
@@ -395,14 +395,21 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   BehindLW = new G4LogicalVolume(Behind,Mylar,"Behind");
   Behind_filmLW = new G4LogicalVolume(Behind,Film,"Behind_film");
 
-  new G4PVPlacement(0,G4ThreeVector(0,0*mm,-Aeroz_real/2-0.05*mm+5*mm),Behind_filmLW,"Behind_film",logicWorld,false,0,checkOverlaps);
-  new G4PVPlacement(0,G4ThreeVector(0,0*mm,-Aeroz_real/2-0.15*mm+5*mm),BehindLW,"Behind",logicWorld,false,0,checkOverlaps);
+  new G4PVPlacement(0,G4ThreeVector(0,0*mm,-Aeroz_real/2-0.05*mm),Behind_filmLW,"Behind_film",logicWorld,false,0,checkOverlaps);
+  new G4PVPlacement(0,G4ThreeVector(0,0*mm,-Aeroz_real/2-0.15*mm),BehindLW,"Behind",logicWorld,false,0,checkOverlaps);
 
   //ELPH reflector bottom
 
-  G4Box *Bottom = new G4Box("Bottom",Aerox_real/2,1*mm,Aeroz_real/2);
+  G4Box *Bottom = new G4Box("Bottom",Aerox_real/2,1*mm/2,Aeroz_real/2);
   BottomLW = new G4LogicalVolume(Bottom,Mylar,"Bottom");
-  //new G4PVPlacement(0,G4ThreeVector(0,-Aeroy_real/2,5*mm),BottomLW,"Bottom",logicWorld,false,0,checkOverlaps);
+  new G4PVPlacement(0,G4ThreeVector(0,-Aeroy_real/2-0.5*mm-0.05*mm,0),BottomLW,"Bottom",logicWorld,false,0,checkOverlaps);
+  new G4PVPlacement(0,G4ThreeVector(0,Aeroy_real/2+0.5*mm+0.05*mm,0),BottomLW,"Bottom",logicWorld,false,0,checkOverlaps);
+
+  //reflector side of aerogel
+  G4Box *Ae_side = new G4Box("Ae_side",1*mm/2,Aeroy_real/2,Aeroz_real/2);
+  Ae_sideLW = new G4LogicalVolume(Ae_side,Mylar,"Ae_side");
+  new G4PVPlacement(0,G4ThreeVector(-Aerox_real/2-0.55*mm,0,0),Ae_sideLW,"Ae_side",logicWorld,false,0,checkOverlaps);
+  new G4PVPlacement(0,G4ThreeVector(Aerox_real/2+0.55*mm,0,0),Ae_sideLW,"Ae_side",logicWorld,false,0,checkOverlaps);
 
   
   //Aerogel Holder
@@ -417,7 +424,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   G4SubtractionSolid* Holder = new G4SubtractionSolid("Holder",Box3,Boxwin3,0,G4ThreeVector(0,0,0));
     
   HolderLW = new G4LogicalVolume(Holder,blacksheet,"Holder");
-  new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,5*mm+5*mm/2),HolderLW,"Holder",logicWorld,false,0,checkOverlaps);
+  //new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,5*mm+5*mm/2),HolderLW,"Holder",logicWorld,false,0,checkOverlaps);
     
 
 
@@ -448,7 +455,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
     
   G4TwoVector offsetA(0.,0.), offsetB(0.,0.);
   G4double scaleA=1., scaleB=1.;
-  G4ExtrudedSolid* Reflect = new G4ExtrudedSolid("Reflect",poly,15.5*cm/2,offsetA,scaleA, offsetB, scaleB);
+  G4ExtrudedSolid* Reflect = new G4ExtrudedSolid("Reflect",poly,Aerox_real/2+5*mm,offsetA,scaleA, offsetB, scaleB);
   ReflectLW = new G4LogicalVolume(Reflect,Mylar,"Reflect");
   FilmLW = new G4LogicalVolume(Reflect,Film,"Film");
   G4RotationMatrix *rotY = new G4RotationMatrix();
@@ -457,38 +464,47 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   rotY->rotateZ(+65*degree);
 
   G4double pary = Aeroy/2+5*cm;
-  G4double parz = Aeroz_real/2+mppc_place+5*cm;
+  //G4double parz = Aeroz_real/2+mppc_place+5*cm;
+  G4double parz = Aeroz_real/2+mppc_place+3.5*cm;
 
   //new G4PVPlacement(rotY,G4ThreeVector(0,pary,parz),FilmLW,"Film",logicWorld,false,0,checkOverlaps);
   new G4PVPlacement(rotY,G4ThreeVector(0,pary,parz),FilmLW,"Film",logicWorld,false,0,checkOverlaps);
-  new G4PVPlacement(rotY,G4ThreeVector(0,pary,parz+0.16*mm),ReflectLW,"Reflect",logicWorld,false,0,checkOverlaps);
+  new G4PVPlacement(rotY,G4ThreeVector(0,pary,parz+0.2*mm),ReflectLW,"Reflect",logicWorld,false,0,checkOverlaps);
 
     
 
 
 
   //side reflector
-  G4Box* Side = new G4Box("Side",1*mm,12*cm,5*cm);
+  G4Box* Side = new G4Box("Side",1*mm,12*cm,10*cm);
   SideLW = new G4LogicalVolume(Side,Mylar,"Side");
 
-  new G4PVPlacement(0,G4ThreeVector(-82.5*mm,0,7*cm),SideLW,"Side",logicWorld,false,0,checkOverlaps);
-  new G4PVPlacement(0,G4ThreeVector(+82.5*mm,0,7*cm),SideLW,"Side",logicWorld,false,0,checkOverlaps);
+  new G4PVPlacement(0,G4ThreeVector(-Aerox_real/2-5*mm,0,7*cm),SideLW,"Side",logicWorld,false,0,checkOverlaps);
+  new G4PVPlacement(0,G4ThreeVector(Aerox_real/2+5*mm,0,7*cm),SideLW,"Side",logicWorld,false,0,checkOverlaps);
 
       
 
    
   //MPPC---------------------------------------------------------------------------
 
-
-    
-  G4Box* MPPC = new G4Box("MPPC",12*mm,12*mm,mppc_thick/2);
-  MPPCLW = new G4LogicalVolume(MPPC,Epoxi,"MPPC");
-  
   G4double mppc_theta = 40*degree;
-
   G4RotationMatrix *rotM = new G4RotationMatrix();
   rotM->rotateX(90*degree+mppc_theta);
-  G4double ml = 29;
+
+  
+  G4Box* solidMPPC = new G4Box("MPPCWorld",Aerox_real/2+5*mm/2,40*mm,mppc_thick/2);
+  G4LogicalVolume* mppcworld = new G4LogicalVolume(solidMPPC,Mylar,"MPPCWorld");
+  new G4PVPlacement(rotM,G4ThreeVector(0*mm,Aeroy/2+mppc_place*1.5*TMath::Sin(mppc_theta),Aeroz_real/2+mppc_place*1.5*TMath::Cos(mppc_theta)),mppcworld,"MPPCWorld",logicWorld,false,0,checkOverlaps);
+  //new G4PVPlacement(rotM,G4ThreeVector(0*mm,Aeroy/2+mppc_place*1.5*TMath::Sin(mppc_theta)+2*cm,Aeroz_real/2+mppc_place*1.5*TMath::Cos(mppc_theta)),mppcworld,"MPPCWorld",logicWorld,false,0,checkOverlaps);
+  G4Box* MPPC = new G4Box("MPPC",12*mm,12*mm,mppc_thick/2);
+  
+  MPPCLW = new G4LogicalVolume(MPPC,Epoxi,"MPPC");
+  
+  
+
+  
+  //G4double ml = 29;
+  G4double ml = 30;
   
   //E72 Real!! (n = 1.10)
 
@@ -504,8 +520,17 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   for(int i=0;i<4;i++){
     //original
     //new G4PVPlacement(rotM,G4ThreeVector(-(ml*1.5)*mm+(ml*i)*mm,Aeroy/2+mppc_place*1.5*TMath::Sin(mppc_theta)+3*cm,Aeroz_real/2+mppc_place*1.5*TMath::Cos(mppc_theta)),MPPCLW,"MPPC",logicWorld,false,i+1,checkOverlaps);
-    new G4PVPlacement(rotM,G4ThreeVector(-(ml*1.5)*mm+(ml*i)*mm,Aeroy/2+mppc_place*1.5*TMath::Sin(mppc_theta)+2*cm,Aeroz_real/2+mppc_place*1.5*TMath::Cos(mppc_theta)),MPPCLW,"MPPC",logicWorld,false,i+1,checkOverlaps);
+    //new G4PVPlacement(rotM,G4ThreeVector(-(ml*1.5)*mm+(ml*i)*mm,Aeroy/2+mppc_place*1.5*TMath::Sin(mppc_theta),Aeroz_real/2+mppc_place*1.5*TMath::Cos(mppc_theta)),MPPCLW,"MPPC",logicWorld,false,i+1,checkOverlaps);
+    new G4PVPlacement(0,G4ThreeVector(-(ml*1.5)*mm+(ml*i)*mm,0,0),MPPCLW,"MPPC",mppcworld,false,i+1,checkOverlaps);
+
   }
+  //new G4PVPlacement(rotM,G4ThreeVector(0,Aeroy/2+mppc_place*1.5*TMath::Sin(mppc_theta)+2*cm,Aeroz_real/2+mppc_place*1.5*TMath::Cos(mppc_theta)),MPPCLW,"MPPC",logicWorld,false,1,checkOverlaps);
+  /*
+  new G4PVPlacement(rotM,G4ThreeVector(-(ml*0.5)*mm,Aeroy/2+mppc_place*1.5*TMath::Sin(mppc_theta)+2*cm,Aeroz_real/2+mppc_place*1.5*TMath::Cos(mppc_theta)),MPPCLW,"MPPC",logicWorld,false,1,checkOverlaps);
+  new G4PVPlacement(rotM,G4ThreeVector(-(ml*0.5)*mm+ml*mm,Aeroy/2+mppc_place*1.5*TMath::Sin(mppc_theta)+2*cm,Aeroz_real/2+mppc_place*1.5*TMath::Cos(mppc_theta)),MPPCLW,"MPPC",logicWorld,false,2,checkOverlaps);
+  new G4PVPlacement(rotM,G4ThreeVector(-(ml*0.5)*mm,Aeroy/2+(mppc_place*1.5-ml)*TMath::Sin(mppc_theta)+2*cm,Aeroz_real/2+(mppc_place*1.5-ml)*TMath::Cos(mppc_theta)),MPPCLW,"MPPC",logicWorld,false,3,checkOverlaps);
+  new G4PVPlacement(rotM,G4ThreeVector(-(ml*0.5)*mm+ml*mm,Aeroy/2+(mppc_place*1.5-ml)*TMath::Sin(mppc_theta)+2*cm,Aeroz_real/2+(mppc_place*1.5-ml)*TMath::Cos(mppc_theta)),MPPCLW,"MPPC",logicWorld,false,4,checkOverlaps);
+  */
 
   
 
@@ -525,8 +550,10 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   Aero1LW->SetVisAttributes(visAttributes);
   Aero2LW->SetVisAttributes(visAttributes);
   Aero3LW->SetVisAttributes(visAttributes);
+  mppcworld->SetVisAttributes(visAttributes);
   
   fVisAttributes.push_back(visAttributes);
+  
 
   visAttributes = new G4VisAttributes(G4Color::Red()); 
   MPPCLW->SetVisAttributes(visAttributes);
@@ -618,7 +645,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   
   G4MaterialPropertiesTable* sp_mylar = new G4MaterialPropertiesTable();
   G4double mylar_reflec[] = {0.98,0.98};  //for metal, reflectivity is calculated using rindex, they use polarization, angle, energy
-  G4double mylar_effi[] = {1.0,1.0};
+  G4double mylar_effi[] = {0.9,0.9};
   //G4double mylar_specularLobe[] = {0.85,0.85};
   //G4double mylar_specularSpike[]={0.87,0.87};
   G4double mylar_specularLobe[] = {0.3,0.3};
@@ -636,6 +663,8 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   new G4LogicalSkinSurface("mylar_surface",SideLW,surface_mylar);
   new G4LogicalSkinSurface("mylar_surface",BottomLW,surface_mylar);
   new G4LogicalSkinSurface("mylar_surface",BehindLW,surface_mylar);
+  new G4LogicalSkinSurface("mylar_surface",mppcworld,surface_mylar);
+  new G4LogicalSkinSurface("mylar_surface",Ae_sideLW,surface_mylar);
 
 
 

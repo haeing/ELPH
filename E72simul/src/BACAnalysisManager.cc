@@ -82,8 +82,8 @@ void BACAnalysisManager::BeginOfRun(const G4Run*)
   tree->Branch("nhMppc",&nhMppc,"nhMppc/I");
   //tree->Branch("mppcmulti"&mppcmulti,"mppcmulti/I");
   //tree->Branch("mppcpid",mppcpid,"mppcpid[nhMppc]/I");
-  //tree->Branch("mppcposx",mppcposx,"mppcposx[nhMppc]/D");
-  //tree->Branch("mppcposy",mppcposy,"mppcposy[nhMppc]/D");
+  tree->Branch("mppcposx",mppcposx,"mppcposx[nhMppc]/D");
+  tree->Branch("mppcposy",mppcposy,"mppcposy[nhMppc]/D");
   //tree->Branch("mppcposz",mppcposz,"mppcposz[nhMppc]/D");
   //tree->Branch("mppctime",mppctime,"mppctime[nhMppc]/D");
   tree->Branch("mppcwavelength",mppcwavelength,"mppcwavelength[nhMppc]/D");
