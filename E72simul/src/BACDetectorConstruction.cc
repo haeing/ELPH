@@ -541,6 +541,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   auto visAttributes = new G4VisAttributes(G4Colour(1.0, 1.0, 1.0));
   visAttributes -> SetVisibility(false);
   logicWorld->SetVisAttributes(visAttributes);
+  SideLW->SetVisAttributes(visAttributes);
   fVisAttributes.push_back(visAttributes);
 
 
@@ -550,7 +551,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   Aero1LW->SetVisAttributes(visAttributes);
   Aero2LW->SetVisAttributes(visAttributes);
   Aero3LW->SetVisAttributes(visAttributes);
-  mppcworld->SetVisAttributes(visAttributes);
+  
   
   fVisAttributes.push_back(visAttributes);
   
@@ -561,7 +562,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
 
   visAttributes = new G4VisAttributes(G4Color::Brown()); 
   ReflectLW->SetVisAttributes(visAttributes);
-  SideLW->SetVisAttributes(visAttributes);
+  
   BehindLW->SetVisAttributes(visAttributes);
   fVisAttributes.push_back(visAttributes);
 

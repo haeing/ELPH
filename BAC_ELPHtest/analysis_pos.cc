@@ -1,6 +1,6 @@
 //Y position : -35 -23 -11 -10 0 12
 
-Int_t y_pos =12;
+Int_t y_pos =-23;
 
 void analysis_pos(){
   //gStyle -> SetOptFit(1);
@@ -162,7 +162,8 @@ void analysis_pos(){
     file_po[0] = new TFile("../../ELPH_data/exp_data/run00313.root","read");
     file_po[1] = new TFile("../../ELPH_data/exp_data/run00314.root","read");
     file_po[2] = new TFile("../../ELPH_data/exp_data/run00315.root","read");
-    file_po[3] = new TFile("../../ELPH_data/exp_data/run00297.root","read");
+    //file_po[3] = new TFile("../../ELPH_data/exp_data/run00297.root","read");
+    file_po[3] = new TFile("../../ELPH_data/exp_data/run00333.root","read");
     file_po[4] = new TFile("../../ELPH_data/exp_data/run00316.root","read");
     file_po[5] = new TFile("../../ELPH_data/exp_data/run00317.root","read");
     file_po[6] = new TFile("../../ELPH_data/exp_data/run00319.root","read");
@@ -209,7 +210,8 @@ void analysis_pos(){
     file_po[0] = new TFile("../../ELPH_data/exp_data/run00048.root","read");
     file_po[1] = new TFile("../../ELPH_data/exp_data/run00052.root","read");
     file_po[2] = new TFile("../../ELPH_data/exp_data/run00053.root","read");
-    file_po[3] = new TFile("../../ELPH_data/exp_data/run00045.root","read");
+    //file_po[3] = new TFile("../../ELPH_data/exp_data/run00045.root","read");
+    file_po[3] = new TFile("../../ELPH_data/exp_data/run00079.root","read");
     file_po[4] = new TFile("../../ELPH_data/exp_data/run00054.root","read");
     file_po[5] = new TFile("../../ELPH_data/exp_data/run00055.root","read");
     file_po[6] = new TFile("../../ELPH_data/exp_data/run00056.root","read");
@@ -307,7 +309,7 @@ void analysis_pos(){
     }
     
     hist_inda[i] = new TH1D(Form("hist_inda_%dcm",x_pos[i]),Form("hist_inda_%dcm",x_pos[i]),100,-10,100);
-    hist_suma[i] = new TH1D(Form("hist_Suma_%dcm",x_pos[i]),Form("hist_Suma_%dcm",x_pos[i]),100,-10,100);
+    hist_suma[i] = new TH1D(Form("hist_Suma_%dcm",x_pos[i]),Form("hist_Suma_%dcm",x_pos[i]),100,-20,100);
     hist_sumt[i] = new TH1D(Form("hist_Sumt_%dcm",x_pos[i]),Form("hist_Sumt_%dcm",x_pos[i]),500,0,1500);
     for(int j=0;j<att;j++){
       hist_simul[i][j] = new TH1D(Form("hist_simul_%dcm_%d",x_pos[i],att_start+50*j),Form("hist_simul_%dcm",x_pos[i]),100,-10,80);
@@ -456,7 +458,8 @@ void analysis_pos(){
 	    }
 	  }
 	}
-	if(pass==4){
+	//if(pass==4){
+
 	  hist_suma[i]->Fill((ADCs[i][0]-parameter_pe[4][1])/one_photon);
 	  hist_sumt[i]->Fill(TDCs[i][0][0]);
 	  for(int j=0;j<4;j++){
@@ -467,7 +470,7 @@ void analysis_pos(){
 	  hist_inda[i]->Fill(numpho);
 	  ind_sum[i]->Fill(rawadc,ADCs[i][0]-parameter_pe[4][1]);
 	}
-      }
+      //}
       else if(y_pos==12){
 	hist_suma[i]->Fill((ADCs[i][0]-parameter_pe[4][1])/one_photon);
 	hist_sumt[i]->Fill(TDCs[i][0][0]);
@@ -542,7 +545,7 @@ void analysis_pos(){
 
   
   TCanvas *c4 = new TCanvas("c4","ADC of Ind channel and Sum channel",800,650);
-  c4->Divide(N,1);
+  c4->Divide(4,2);
   for(int i=0;i<N;i++){
     ind_sum[i]->SetTitle("Comparision of Ind and Sum ADC;Ind [ADC Ch.];Sum [ADC Ch.]");
     c4->cd(i+1);
@@ -583,7 +586,7 @@ void analysis_pos(){
 	    }
 	  }
 	}
-	if(pass==4){
+	//if(pass==4){
 	  tot_evt[i]+=1;
 	  if(ADCs[i][0]<3840){
 	    numpho_sum = (ADCs[i][0]-parameter_pe[4][1])/one_photon;
@@ -619,7 +622,7 @@ void analysis_pos(){
 	    }
 	    //}
 	  }
-	}
+	  //}
       }
       
       

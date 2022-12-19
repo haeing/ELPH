@@ -50,8 +50,8 @@ int main(int argc,char** argv)
     //std::cout<<"Please enter the version"<<std::endl;
     ui = new G4UIExecutive(argc, argv);
     histname = "geant4_test.root";
-    par1_put ="-80";
-    par2_put = "-100";
+    par1_put ="0";
+    par2_put = "0";
     par3_put = "150";
     
   }
@@ -112,8 +112,8 @@ int main(int argc,char** argv)
   //opticalPhysics->SetWLSTimeProfile("delta");
   opticalPhysics->SetTrackSecondariesFirst(kCerenkov,true);
   //opticalPhysics->Configure(kCerenkov,false);
-  opticalPhysics->SetTrackSecondariesFirst(kScintillation,true);
-  //opticalPhysics->Configure(kScintillation,false);
+  //opticalPhysics->SetTrackSecondariesFirst(kScintillation,true);
+  opticalPhysics->Configure(kScintillation,false);
   physicsList->RegisterPhysics(opticalPhysics);
 
   runManager->SetUserInitialization(physicsList);

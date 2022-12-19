@@ -2,7 +2,7 @@ void npe_picture(){
 
   Int_t F = 1; //# of files
   Int_t y_pos[F];
-  y_pos[0] = -10;
+  y_pos[0] = -35;
   //y_pos[1] = -10;
   //y_pos[0] = -11;
   //y_pos[1] = -23;
@@ -73,7 +73,8 @@ void npe_picture(){
     for(int j=0;j<N;j++){
       x_pos[j] = 10.0*x_position[i][j];
       x_err[j] = 0.05;
-      pa_mean[j] = mean[i][j];
+      if(TMath::Abs(x_pos[j])<=50)pa_mean[j] = mean[i][j];
+      if(TMath::Abs(x_pos[j])>50)pa_mean[j] = 0;
       pa_sigma[j] = sigma[i][j];
       pa_error[j] = error[i][j];
       pa_si_mean[j] = simul_mean[i][j];

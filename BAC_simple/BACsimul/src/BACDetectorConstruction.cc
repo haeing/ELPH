@@ -129,7 +129,7 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   G4MaterialPropertiesTable* prop_aerogel1 = new G4MaterialPropertiesTable();
 
 
-  G4double factor = 8;
+  G4double factor = 5;
 
   G4double aerogel1_ep[] = {1.3*eV,7.*eV};
   G4double aerogel_ep[] = {1.3*eV,1.56*eV,1.68*eV,1.84*eV,2.06*eV,2.26*eV,2.54*eV,2.90*eV,3.10*eV,3.28*eV,3.94*eV,4.94*eV,7.0*eV};
@@ -346,20 +346,20 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   MPPCLW = new G4LogicalVolume(MPPC,Epoxi,"MPPC");
   G4RotationMatrix *rotM = new G4RotationMatrix();
   rotM->rotateX(90*degree);
-  new G4PVPlacement(rotM,G4ThreeVector(-40*mm,Aeroy_real/2+mppc_thick,0),MPPCLW,"MPPC",logicWorld,false,1,checkOverlaps);
-  new G4PVPlacement(rotM,G4ThreeVector(0*mm,Aeroy_real/2+mppc_thick,0),MPPCLW,"MPPC",logicWorld,false,2,checkOverlaps);
-  new G4PVPlacement(rotM,G4ThreeVector(40*mm,Aeroy_real/2+mppc_thick,0),MPPCLW,"MPPC",logicWorld,false,3,checkOverlaps);
-  new G4PVPlacement(rotM,G4ThreeVector(-40*mm,-Aeroy_real/2-mppc_thick,0),MPPCLW,"MPPC",logicWorld,false,4,checkOverlaps);
-  new G4PVPlacement(rotM,G4ThreeVector(0*mm,-Aeroy_real/2-mppc_thick,0),MPPCLW,"MPPC",logicWorld,false,5,checkOverlaps);
-  new G4PVPlacement(rotM,G4ThreeVector(40*mm,-Aeroy_real/2-mppc_thick,0),MPPCLW,"MPPC",logicWorld,false,6,checkOverlaps);
+  new G4PVPlacement(rotM,G4ThreeVector(-125*mm/2+125*mm/3,Aeroy_real/2+mppc_thick,0),MPPCLW,"MPPC",logicWorld,false,1,checkOverlaps);
+  new G4PVPlacement(rotM,G4ThreeVector(125*mm/2-125*mm/3,Aeroy_real/2+mppc_thick,0),MPPCLW,"MPPC",logicWorld,false,2,checkOverlaps);
+  //new G4PVPlacement(rotM,G4ThreeVector(40*mm,Aeroy_real/2+mppc_thick,0),MPPCLW,"MPPC",logicWorld,false,3,checkOverlaps);
+  new G4PVPlacement(rotM,G4ThreeVector(-125*mm/2+125*mm/3,-Aeroy_real/2-mppc_thick,0),MPPCLW,"MPPC",logicWorld,false,4,checkOverlaps);
+  new G4PVPlacement(rotM,G4ThreeVector(125*mm/2-125*mm/3,-Aeroy_real/2-mppc_thick,0),MPPCLW,"MPPC",logicWorld,false,5,checkOverlaps);
+  //new G4PVPlacement(rotM,G4ThreeVector(40*mm,-Aeroy_real/2-mppc_thick,0),MPPCLW,"MPPC",logicWorld,false,6,checkOverlaps);
 
   //Al frame
   G4Box* Frame_be = new G4Box("Frame_be",Aerox_real/2,mppc_thick/2,Aeroz_real/2);
   G4Box* MPPChole = new G4Box("MPPChole",12*mm,12*mm,mppc_thick);
     
-  G4SubtractionSolid* Frame1 = new G4SubtractionSolid("Frame",Frame_be,MPPChole,rotM,G4ThreeVector(-4*cm,0,0));
-  G4SubtractionSolid* Frame2 = new G4SubtractionSolid("Frame",Frame1,MPPChole,rotM,G4ThreeVector(0*cm,0,0));
-  G4SubtractionSolid* Frame = new G4SubtractionSolid("Frame",Frame2,MPPChole,rotM,G4ThreeVector(4*cm,0,0));
+  G4SubtractionSolid* Frame1 = new G4SubtractionSolid("Frame",Frame_be,MPPChole,rotM,G4ThreeVector(-125*mm/2+125*mm/3,0,0));
+  //G4SubtractionSolid* Frame2 = new G4SubtractionSolid("Frame",Frame1,MPPChole,rotM,G4ThreeVector(0*cm,0,0));
+  G4SubtractionSolid* Frame = new G4SubtractionSolid("Frame",Frame1,MPPChole,rotM,G4ThreeVector(125*mm/2-125*mm/3,0,0));
 
   FrameLW = new G4LogicalVolume(Frame,Teflon,"Frame");
   new G4PVPlacement(0,G4ThreeVector(0,Aeroy_real/2+mppc_thick/2,0),FrameLW,"Frame",logicWorld,false,0,checkOverlaps);
