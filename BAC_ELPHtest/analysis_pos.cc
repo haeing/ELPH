@@ -1,13 +1,13 @@
 //Y position : -35 -23 -11 -10 0 12
 
-Int_t y_pos =-23;
+Int_t y_pos = 9999;
 
 void analysis_pos(){
   //gStyle -> SetOptFit(1);
   gStyle -> SetOptStat(0);
   
   TFile *file_pe;
-  if(y_pos==13||y_pos == 12 ||y_pos == 0||y_pos ==-10)file_pe = new TFile("../../ELPH_data/exp_data/run00333.root","read");
+  if(y_pos==13||y_pos == 12 ||y_pos == 0||y_pos ==-10||y_pos==9999)file_pe = new TFile("../../ELPH_data/exp_data/run00333.root","read");
   else if(y_pos ==-35 || y_pos ==-23 ||y_pos ==-11)file_pe = new TFile("../../ELPH_data/exp_data/run00079.root","read");
   
   Int_t N;  //x position
@@ -19,6 +19,8 @@ void analysis_pos(){
   else if(y_pos ==-35)N=11;
   else if(y_pos == 12)N=5;
   else if(y_pos ==13) N=1;
+  else if(y_pos ==9999) N=5;
+
   
   Int_t att = 1;
   
@@ -95,8 +97,15 @@ void analysis_pos(){
     x_pos[4] = 4;
   }
 
+  else if(y_pos==9999){
+    x_pos[0] = 60;
+    x_pos[1] = 70;
+    x_pos[2] = 75;
+    x_pos[3] = 80;
+    x_pos[4] = 100;
+  }
+
   else if(y_pos==13)x_pos[0]=0;
-    
     
 
   Int_t start_pos = -6;
@@ -210,8 +219,8 @@ void analysis_pos(){
     file_po[0] = new TFile("../../ELPH_data/exp_data/run00048.root","read");
     file_po[1] = new TFile("../../ELPH_data/exp_data/run00052.root","read");
     file_po[2] = new TFile("../../ELPH_data/exp_data/run00053.root","read");
-    //file_po[3] = new TFile("../../ELPH_data/exp_data/run00045.root","read");
-    file_po[3] = new TFile("../../ELPH_data/exp_data/run00079.root","read");
+    file_po[3] = new TFile("../../ELPH_data/exp_data/run00045.root","read");
+    //file_po[3] = new TFile("../../ELPH_data/exp_data/run00079.root","read");
     file_po[4] = new TFile("../../ELPH_data/exp_data/run00054.root","read");
     file_po[5] = new TFile("../../ELPH_data/exp_data/run00055.root","read");
     file_po[6] = new TFile("../../ELPH_data/exp_data/run00056.root","read");
@@ -222,6 +231,7 @@ void analysis_pos(){
       }
     }
   }
+
 
   else if(y_pos==-35){
     file_po[0] = new TFile("../../ELPH_data/exp_data/run00068.root","read");
@@ -264,6 +274,21 @@ void analysis_pos(){
     for(int i=0;i<N;i++){
       for(int j=0;j<att;j++){
 	file_simul[i][j] = new TFile(Form("../../ELPH_data/simul_acr/elph_221020_%dmm_12mm.root",x_pos[i]*10),"read");
+      }
+    }
+  }
+
+  else if(y_pos==9999){ //Threshold change
+    file_po[0] = new TFile("../../ELPH_data/exp_data/run00294.root","read"); //0
+    file_po[1] = new TFile("../../ELPH_data/exp_data/run00295.root","read"); //0
+    file_po[2] = new TFile("../../ELPH_data/exp_data/run00296.root","read"); //0
+    file_po[3] = new TFile("../../ELPH_data/exp_data/run00293.root","read"); //0
+    file_po[4] = new TFile("../../ELPH_data/exp_data/run00292.root","read"); //0
+
+    
+    for(int i=0;i<N;i++){
+      for(int j=0;j<att;j++){
+	file_simul[i][j] = new TFile("../../ELPH_data/simul_acr/elph_221020_-20mm_-10mm.root","read");
       }
     }
   }
@@ -552,7 +577,8 @@ void analysis_pos(){
     ind_sum[i]->Draw("colz");
   }
 
-  auto eff = new TEfficiency("eff","Efficiency;X [mm];Efficiency",100,-60,70);
+  //auto eff = new TEfficiency("eff","Efficiency;X [mm];Efficiency",100,-60,70);
+  auto eff = new TEfficiency("eff","Efficiency;Threshold [mV];Efficiency",100,50,110);
   
   Double_t numpho_sum;
   Double_t pass_inda;
@@ -607,7 +633,8 @@ void analysis_pos(){
 	    if(numpho_sum>5)evt_sum_cuta[i]+=1;
 	  }
 	  else{bPassed=0;}
-	  eff->Fill(bPassed,x_pos[i]*10.0);
+	  //eff->Fill(bPassed,x_pos[i]*10.0);
+	  eff->Fill(bPassed,x_pos[i]*1.0);
 	
 	  for(int j=0;j<4;j++){
 	    if(ADCi[i][j]<3840)pass_inda+=1;
