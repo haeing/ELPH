@@ -50,7 +50,7 @@ void analysis_E72_167(){
     for(int j=0;j<Y;j++){
       for(int k=0;k<M;k++){
 	
-	file[i][j][k] = new TFile(Form("~/E72/ELPH_data/simul_four_3/bac_x_%dmm_y_%dmm_mom_%d.root",x_pos[i],y_pos[j],mom[k]),"read");
+	file[i][j][k] = new TFile(Form("~/E72/ELPH_data/simul_four/bac_x_%dmm_y_%dmm_mom_%d.root",x_pos[i],y_pos[j],mom[k]),"read");
 	tree[i][j][k] = (TTree*)file[i][j][k]->Get("tree");
 	tree[i][j][k]->SetBranchAddress("nhMppc",&nhMppc[i][j][k]);
 	tree[i][j][k]->SetBranchAddress("mppcnum",mppcnum[i][j][k]);
