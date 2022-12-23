@@ -16,6 +16,7 @@ class EvtVector4R;
 const int num_evtgen = 100000;
 const int num_mppchit = 100000;
 const int num_aerohit = 100000;
+const int num_airhit = 100000;
 
 class BACAnalysisManager
 {
@@ -71,6 +72,9 @@ private:
   double aeroposx[num_aerohit];
   double aeroposy[num_aerohit];
   double aeroposz[num_aerohit];
+
+  int nhAir;
+  int airpid[num_airhit];
 
   
 };

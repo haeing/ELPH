@@ -32,20 +32,25 @@ BACStackingAction::ClassifyNewTrack(const G4Track * aTrack)
   G4ClassificationOfNewTrack classification = fWaiting;
   const G4double h = 6.628e-34;
   const G4double c = 3.0e+8;
+
   
-  if(aTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition())
-  { // particle is optical photon
-    if(aTrack->GetParentID()>0)
-    { // particle is secondary
-      if(aTrack->GetCreatorProcess()->GetProcessName() == "Scintillation")
-        fScintillationCounter++;
-      if(aTrack->GetCreatorProcess()->GetProcessName() == "Cerenkov"){
-	if(((h*c)/(aTrack->GetTotalEnergy()*1.6e-13))*(1e+9)>320&&((h*c)/(aTrack->GetTotalEnergy()*1.6e-13))*(1e+9)<900){
-	//if(((h*c)/(aTrack->GetTotalEnergy()*1.6e-13))*(1e+9)>190&&((h*c)/(aTrack->GetTotalEnergy()*1.6e-13))*(1e+9)<900){
-	  fCerenkovCounter++;
-	  gCerenkovCounter++;
-	}
-	else return fKill;
+  if(aTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition()){
+    if(aTrack->GetTouchable()->GetVolume()->GetCopyNo() ==123){
+      { // particle is optical photon
+	if(aTrack->GetParentID()>0)
+	  { // particle is secondary
+	    if(aTrack->GetCreatorProcess()->GetProcessName() == "Scintillation")
+	      fScintillationCounter++;
+	    if(aTrack->GetCreatorProcess()->GetProcessName() == "Cerenkov"){
+	      if(((h*c)/(aTrack->GetTotalEnergy()*1.6e-13))*(1e+9)>320&&((h*c)/(aTrack->GetTotalEnergy()*1.6e-13))*(1e+9)<900){
+		//if(((h*c)/(aTrack->GetTotalEnergy()*1.6e-13))*(1e+9)>190&&((h*c)/(aTrack->GetTotalEnergy()*1.6e-13))*(1e+9)<900){
+		fCerenkovCounter++;
+		gCerenkovCounter++;
+		//std::cout<<"Cherenkov"<<std::endl;
+	      }
+	      else return fKill;
+	    }
+	  }
       }
     }
   }

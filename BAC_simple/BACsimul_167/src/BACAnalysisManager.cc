@@ -4,6 +4,7 @@
 #include "G4SDManager.hh"
 #include "AeroHit.hh"
 #include "MPPCHit.hh"
+#include "AirHit.hh"
 
 
 
@@ -81,7 +82,7 @@ void BACAnalysisManager::BeginOfRun(const G4Run*)
   //MPPC
   tree->Branch("nhMppc",&nhMppc,"nhMppc/I");
   //tree->Branch("mppcmulti"&mppcmulti,"mppcmulti/I");
-  //tree->Branch("mppcpid",mppcpid,"mppcpid[nhMppc]/I");
+  tree->Branch("mppcpid",mppcpid,"mppcpid[nhMppc]/I");
   //tree->Branch("mppcposx",mppcposx,"mppcposx[nhMppc]/D");
   //tree->Branch("mppcposy",mppcposy,"mppcposy[nhMppc]/D");
   //tree->Branch("mppcposz",mppcposz,"mppcposz[nhMppc]/D");
@@ -90,6 +91,8 @@ void BACAnalysisManager::BeginOfRun(const G4Run*)
   tree->Branch("mppcnum",mppcnum,"mppcnum[nhMppc]/I");
 
 
+  tree->Branch("nhAir",&nhAir,"nhAir/I");
+  tree->Branch("airpid",airpid,"airpid[nhAir]/I");
 
   event = 0;
   nEvt = 0;
@@ -118,6 +121,7 @@ void BACAnalysisManager::EndOfEvent(const G4Event* anEvent)
 
   G4int nhmppc = 0;
   G4int nhaero = 0;
+  G4int nhair = 0;
   G4int multiplicity = 0;
 
   G4int pdg = anEvent->GetPrimaryVertex(0)->GetPrimary(0)->GetPDGcode();
@@ -163,6 +167,26 @@ void BACAnalysisManager::EndOfEvent(const G4Event* anEvent)
     }
   nhMppc = nhmppc;
 
+  AirHitsCollection *AIRHC = 0;
+  G4int ColIdAIR = SDMan->GetCollectionID("AirCollection");
+  if(ColIdAIR>=0)
+    {
+      AIRHC=dynamic_cast<AirHitsCollection *>(HCTE->GetHC(ColIdAIR));
+      if(AIRHC)
+	{
+	  nhair = AIRHC->entries();
+	}
+    }
+
+  for(int i=0;i<nhair;i++)
+    {
+      AirHit* aHit = (*AIRHC)[i];
+      airpid[i] = aHit->GetParticleID();
+
+    }
+  nhAir = nhair;
+
+
   
 
   AeroHitsCollection *AEROHC = 0;
@@ -195,6 +219,7 @@ void BACAnalysisManager::EndOfEvent(const G4Event* anEvent)
   nEvt=0;
   nhaero = 0;
   nhmppc = 0;
+  nhair = 0;
 
 
   

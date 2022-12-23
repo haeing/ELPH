@@ -6,6 +6,8 @@
 #include "BACAnalysisManager.hh"
 #include "AeroSD.hh"
 #include "AeroHit.hh"
+#include "AirSD.hh"
+#include "AirHit.hh"
 #include "MPPCSD.hh"
 #include "MPPCHit.hh"
 
@@ -52,10 +54,9 @@ int main(int argc,char** argv)
     ui = new G4UIExecutive(argc, argv);
     histname = "geant4_test.root";
     par1_put ="0";
-    par2_put = "50";
-    par3_put = "735";
-    par4_put = "40";
-    
+    par2_put = "0";
+    par3_put = "780";
+    par4_put = "36";
   }
 
 

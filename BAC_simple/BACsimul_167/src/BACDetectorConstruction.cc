@@ -1,6 +1,7 @@
 #include "BACDetectorConstruction.hh"
 #include "AeroSD.hh"
 #include "MPPCSD.hh"
+#include "AirSD.hh"
 
 
 #include "G4Colour.hh"
@@ -303,12 +304,13 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   
   
     G4double Ref_space = 25*mm;
+    G4double Ref_spacez = 5*mm;
 
 
     G4double mppc_thick = 1*mm;
     G4double re_thick = 1*mm;
 
-    G4Box* Reflect = new G4Box("Reflect",(Aerox*2+Ref_space)/2,(Aeroy+Ref_space)/2,(Aeroz+Ref_space)/2);
+    G4Box* Reflect = new G4Box("Reflect",(Aerox*2+Ref_space)/2,(Aeroy+Ref_space)/2,(Aeroz*2+Ref_spacez)/2);
     ReflectLW = new G4LogicalVolume(Reflect,Teflon,"Reflect");
     new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,0*mm),ReflectLW,"Reflect",logicWorld,false,0,checkOverlaps);
 
@@ -323,10 +325,15 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   
     G4Box* Aero = new G4Box("Aero",Aerox_real/2,Aeroy_real/2,Aeroz_real/2);
     AeroLW = new G4LogicalVolume(Aero,Aerogel1,"Aero");
-    new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,0*mm),AeroLW,"Aero",Aero_airLW,false,10,checkOverlaps);
+    new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,0*mm),AeroLW,"Aero",Aero_airLW,false,123,checkOverlaps);
   
 
 
+
+    //Check decay
+    G4Box* Air = new G4Box("Air",(Aerox*2+Ref_space)/2,(Aeroy+Ref_space)/2,0.1*mm/2);
+    AirLW = new G4LogicalVolume(Air,world_mat,"Air");
+    new G4PVPlacement(0,G4ThreeVector(0,0,(Aeroz*2+Ref_spacez+0.1*mm)/2),AirLW,"Air",logicWorld,false,0,checkOverlaps);
 
 
 
@@ -362,12 +369,12 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   
   
     G4double Ref_space = 25*mm;
-
+    G4double Ref_spacez = 5*mm;
 
     G4double mppc_thick = 1*mm;
     G4double re_thick = 1*mm;
 
-    G4Box* Reflect = new G4Box("Reflect",(Aerox*2+Ref_space)/2,(Aeroy+Ref_space)/2,(Aeroz*3+Ref_space)/2);
+    G4Box* Reflect = new G4Box("Reflect",(Aerox*2+Ref_space)/2,(Aeroy+Ref_space)/2,(Aeroz*3+Ref_spacez)/2);
     ReflectLW = new G4LogicalVolume(Reflect,Teflon,"Reflect");
     new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,0*mm),ReflectLW,"Reflect",logicWorld,false,0,checkOverlaps);
 
@@ -384,8 +391,8 @@ G4VPhysicalVolume* BACDetectorConstruction::Construct()
   
     G4Box* Aero = new G4Box("Aero",Aerox_real/2,Aeroy_real/2,Aeroz_real/2);
     AeroLW = new G4LogicalVolume(Aero,Aerogel1,"Aero");
-    new G4PVPlacement(0,G4ThreeVector(-Aerox/2-2.5*mm,0*mm,0*mm),AeroLW,"Aero",Aero_airLW,false,10,checkOverlaps);
-    new G4PVPlacement(0,G4ThreeVector(Aerox/2-2.5*mm,0*mm,0*mm),AeroLW,"Aero",Aero_airLW,false,10,checkOverlaps);
+    new G4PVPlacement(0,G4ThreeVector(-Aerox/2-2.5*mm,0*mm,0*mm),AeroLW,"Aero",Aero_airLW,false,123,checkOverlaps);
+    new G4PVPlacement(0,G4ThreeVector(Aerox/2-2.5*mm,0*mm,0*mm),AeroLW,"Aero",Aero_airLW,false,123,checkOverlaps);
   
 
 
@@ -580,7 +587,9 @@ void BACDetectorConstruction::ConstructSDandField()
   G4SDManager::GetSDMpointer()->AddNewDetector(mppcSD);
   MPPCLW->SetSensitiveDetector(mppcSD);
 
-
+  auto airSD = new AirSD("airSD");
+  G4SDManager::GetSDMpointer()->AddNewDetector(airSD);
+  AirLW->SetSensitiveDetector(airSD);
 
   
 

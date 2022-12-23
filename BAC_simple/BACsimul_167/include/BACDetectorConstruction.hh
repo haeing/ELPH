@@ -48,12 +48,13 @@ private:
   G4LogicalVolume* MPPC1LW;
   G4LogicalVolume* BehindLW;
   G4LogicalVolume* FrameLW;
+
   
 
 
   G4LogicalVolume* Part1LW;
   G4LogicalVolume* Part2LW;
-  G4LogicalVolume* CheckLW;
+  G4LogicalVolume* AirLW;
   G4LogicalVolume* ReflectLW;
   G4LogicalVolume* Reflect1LW;
   G4LogicalVolume* ReflectBLW;
@@ -65,7 +66,7 @@ private:
 
   std::vector<G4VisAttributes*> fVisAttributes;
 
-  G4int version = 2;
+  G4int version = 1;
   //const int version = stoi(version_put);
 
   //G4String version_put;
