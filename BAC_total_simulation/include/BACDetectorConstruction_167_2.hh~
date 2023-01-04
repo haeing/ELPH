@@ -1,0 +1,84 @@
+#ifndef BACDetectorConstruction_167_2_hh
+#define BACDetectorConstruction_167_2_hh
+
+#include "G4VUserDetectorConstruction.hh"
+#include "globals.hh"
+
+
+class G4VPhysicalVolume;
+class G4LogicalVolume;
+class G4VSensitiveDetector;
+class G4PVPlacement;
+class G4VisAttributes;
+
+
+class BACDetectorConstruction_167_2 : public G4VUserDetectorConstruction
+{
+public:
+  BACDetectorConstruction_167_2(const G4String &parameter4);
+  virtual ~BACDetectorConstruction_167_2();
+
+  virtual void ConstructSDandField();
+
+  virtual G4VPhysicalVolume* Construct();
+
+private:
+
+  G4double pa4;
+
+  
+  G4VPhysicalVolume* physWorld;
+  G4VPhysicalVolume* physDetect;
+  G4LogicalVolume* AeroLW;
+  G4LogicalVolume* Aero_airLW;
+
+  G4LogicalVolume* BlackLW;
+  G4LogicalVolume* trdworldLW;
+  G4LogicalVolume* TrdLW;
+  G4LogicalVolume* UpReflLW;
+  G4LogicalVolume* DownReflLW;
+  G4LogicalVolume* MPPCLW;
+  G4LogicalVolume* WinstonLW;
+  G4LogicalVolume* CCPCLW;
+  G4LogicalVolume* UpLW;
+  G4LogicalVolume* BottomLW;
+  G4LogicalVolume* DetLW;
+  G4LogicalVolume* ACLW;
+  G4LogicalVolume* MPPCLW1;
+  G4LogicalVolume* MPPC1LW;
+  G4LogicalVolume* BehindLW;
+  G4LogicalVolume* FrameLW;
+
+  
+
+
+  G4LogicalVolume* Part1LW;
+  G4LogicalVolume* Part2LW;
+  G4LogicalVolume* ReflectLW;
+  G4LogicalVolume* Reflect1LW;
+  G4LogicalVolume* ReflectBLW;
+  G4LogicalVolume* DetectLW;
+  G4LogicalVolume* SideLW;
+  G4LogicalVolume* HolderLW;
+
+
+
+  std::vector<G4VisAttributes*> fVisAttributes;
+
+  //const int version = stoi(version_put);
+
+  //G4String version_put;
+  G4String version_in;
+  G4String num_aero;
+  //G4String parameter1;
+  //G4String parameter2;
+  G4String parameter4;
+
+  
+  //BACLens *Lens;
+
+
+  
+};
+
+#endif

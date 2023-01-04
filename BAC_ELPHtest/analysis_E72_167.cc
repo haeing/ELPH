@@ -16,6 +16,8 @@ void analysis_E72_167(){
   Int_t nhMppc[X][Y][M];
   Int_t mppcnum[X][Y][M][1000];
   TH1D *hist_simul[X][Y][M];
+
+  TH1D* hist_total = new TH1D("hist_total","hist_total",40,0,40);
   TF1 *fit_simul[X][Y][M];
 
   Double_t pa_simul[X][Y][M][3];
@@ -50,7 +52,7 @@ void analysis_E72_167(){
     for(int j=0;j<Y;j++){
       for(int k=0;k<M;k++){
 	
-	file[i][j][k] = new TFile(Form("~/E72/ELPH_data/simul_four/bac_x_%dmm_y_%dmm_mom_%d.root",x_pos[i],y_pos[j],mom[k]),"read");
+	file[i][j][k] = new TFile(Form("~/E72/ELPH_data/simul_167_36/bac_%dmm_%dmm_mom_%d_mppc_36mm.root",x_pos[i],y_pos[j],mom[k]),"read");
 	tree[i][j][k] = (TTree*)file[i][j][k]->Get("tree");
 	tree[i][j][k]->SetBranchAddress("nhMppc",&nhMppc[i][j][k]);
 	tree[i][j][k]->SetBranchAddress("mppcnum",mppcnum[i][j][k]);
@@ -62,6 +64,7 @@ void analysis_E72_167(){
 	for(int n=0;n<1000;n++){
 	  tree[i][j][k]->GetEntry(n);
 	  hist_simul[i][j][k]->Fill(nhMppc[i][j][k]);
+	  hist_total->Fill(nhMppc[i][j][k]);
 
 	  if(nhMppc[i][j][k]>7)passed =1;
 
@@ -138,7 +141,8 @@ void analysis_E72_167(){
     
   }
 
-
+  TCanvas *c_total = new TCanvas("c_total","c_total",800,650);
+  hist_total->Draw();
     
     
       
