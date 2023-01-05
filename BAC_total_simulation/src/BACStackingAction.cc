@@ -65,7 +65,6 @@ BACStackingAction::ClassifyNewTrack(const G4Track * aTrack)
   if(check ==1){
     if(aTrack->GetTouchable()->GetVolume()->GetCopyNo() ==123){
       if(aTrack->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition()){
-      std::cout<<aTrack->GetDefinition()->GetPDGEncoding()<<std::endl;
       num_check++;
       pid_sum+=aTrack->GetDefinition()->GetPDGEncoding();
       }

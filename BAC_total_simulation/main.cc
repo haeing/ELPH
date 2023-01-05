@@ -58,7 +58,7 @@ int main(int argc,char** argv)
     par1_put ="0";
     par2_put = "0";
     par3_put = "780";
-    par4_put = "2";
+    par4_put = "4";
   }
 
 
