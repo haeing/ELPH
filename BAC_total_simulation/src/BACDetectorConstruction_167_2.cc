@@ -332,8 +332,8 @@ G4VPhysicalVolume* BACDetectorConstruction_167_2::Construct()
    
   //MPPC---------------------------------------------------------------------------
 
-  //G4double sensor_pos = 125*mm;
-  G4double sensor_pos = 36*mm;
+  //G4double sensor_pos = 36*mm;
+  G4double sensor_pos = 50*mm;
   G4Box* MPPC = new G4Box("MPPC",12*mm,12*mm,mppc_thick/2);
   MPPCLW = new G4LogicalVolume(MPPC,Epoxi,"MPPC");
   G4RotationMatrix *rotM = new G4RotationMatrix();

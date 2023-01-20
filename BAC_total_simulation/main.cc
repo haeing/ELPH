@@ -75,16 +75,6 @@ int main(int argc,char** argv)
   }
 
   G4int geo_version = stod(par4_put);
-  /*
-  else
-    {
-      histname = "geant4_test.root";
-      par1_put ="1";
-      par2_put = "2";
-      par3_put = "3";
-      ui = new G4UIExecutive(1, argv);
-    }
-  */
   
 
   // Optionally: choose a different Random engine...
@@ -123,8 +113,8 @@ int main(int argc,char** argv)
   //opticalPhysics->SetWLSTimeProfile("delta");
   opticalPhysics->SetTrackSecondariesFirst(kCerenkov,true);
   //opticalPhysics->Configure(kCerenkov,false);
-  opticalPhysics->SetTrackSecondariesFirst(kScintillation,true);
-  //opticalPhysics->Configure(kScintillation,false);
+  //opticalPhysics->SetTrackSecondariesFirst(kScintillation,true);
+  opticalPhysics->Configure(kScintillation,false);
   physicsList->RegisterPhysics(opticalPhysics);
 
   runManager->SetUserInitialization(physicsList);

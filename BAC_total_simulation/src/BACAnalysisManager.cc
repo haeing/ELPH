@@ -192,7 +192,7 @@ void BACAnalysisManager::EndOfEvent(const G4Event* anEvent)
 
     }
   nhAero = nhaero;
-  std::cout<<decay_check<<std::endl;
+  //std::cout<<decay_check<<std::endl;
   if(pdg==decay_check){
     tree->Fill();
     event++;

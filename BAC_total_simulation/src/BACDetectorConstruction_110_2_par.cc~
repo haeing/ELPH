@@ -384,16 +384,10 @@ G4VPhysicalVolume* BACDetectorConstruction_110_3_par::Construct()
   Aero3LW = new G4LogicalVolume(Aero3,Aerogel3,"Aero3");
 
   //version with 3 aerogel
-  /*  
+  
   new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,-Aeroz2/2-Aero_space-Aeroz1/2),Aero1LW,"Aero1",logicWorld,false,123,checkOverlaps);
   new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,0*mm),Aero2LW,"Aero2",logicWorld,false,123,checkOverlaps);
   new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,+Aeroz2/2+Aero_space+Aeroz3/2),Aero3LW,"Aero3",logicWorld,false,123,checkOverlaps);
-  */
-
-  //version with 2 aerogel
-  
-  new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,-Aeroz1/2-Aero_space),Aero1LW,"Aero1",logicWorld,false,123,checkOverlaps);
-  new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,+Aeroz2/2+Aero_space),Aero3LW,"Aero3",logicWorld,false,123,checkOverlaps);
 
 
 
@@ -731,7 +725,7 @@ void BACDetectorConstruction_110_3_par::ConstructSDandField()
   G4SDManager::GetSDMpointer()->AddNewDetector(aeroSD);
   Aero1LW->SetSensitiveDetector(aeroSD);
   Aero2LW->SetSensitiveDetector(aeroSD);
-  //Aero3LW->SetSensitiveDetector(aeroSD);
+  Aero3LW->SetSensitiveDetector(aeroSD);
 
 
 

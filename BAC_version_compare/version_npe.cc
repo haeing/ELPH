@@ -1,17 +1,20 @@
 void version_npe(){
   Int_t X = 6;
-  Int_t Y = 6;
+  Int_t Y = 11;
   Int_t M = 4;
   Int_t x_pos[X];
   Int_t y_pos[Y];
   Int_t mom[M];
   for(int i=0;i<X;i++)x_pos[i] = 0+10*i;
-  for(int i=0;i<Y;i++)y_pos[i] = 0+10*i;
+  //for(int i=0;i<Y;i++)y_pos[i] = 0+10*i;
+  for(int i=0;i<Y;i++)y_pos[i] = -50+10*i;
 
   for(int i=0;i<M;i++)mom[i] = 700+30*i;
+  //mom[0] = 800;mom[1] = 830;mom[2] = 850;
 
   TFile *file[X][Y][M];
   TTree *tree[X][Y][M];
+
 
   Int_t nhMppc[X][Y][M];
   Int_t mppcnum[X][Y][M][1000];
@@ -23,13 +26,17 @@ void version_npe(){
   Double_t pa_simul[X][Y][M][3];
   Double_t pa_error[X][Y][M];
 
+  Double_t total_get[X][Y][M];
+
   TGraphErrors *npe[M][X];
 
   TCanvas *c1[M];
   Int_t evt[X][Y][M];
 
   TEfficiency *eff[M][X];
+  TEfficiency *eff_total = new TEfficiency("eff_total",";N_{p.e.};Efficiency",100,4,11);
   Bool_t passed;
+  Bool_t pass_to[6];
 
   
   for(int i=0;i<M;i++){
@@ -47,28 +54,38 @@ void version_npe(){
       eff[i][j]->SetLineColor(j+1);
     }
   }
+
   
   for(int i=0;i<X;i++){
     for(int j=0;j<Y;j++){
       for(int k=0;k<M;k++){
 	
-	file[i][j][k] = new TFile(Form("~/E72/ELPH_data/simul_3/bac_x_%dmm_y_%dmm_mom_%d.root",x_pos[i],y_pos[j],mom[k]),"read");
+	file[i][j][k] = new TFile(Form("../../ELPH_data/simul_110_par_aerogel1/bac_x_%dmm_y_%dmm_mom_%d.root",x_pos[i],y_pos[j],mom[k]),"read");
 	tree[i][j][k] = (TTree*)file[i][j][k]->Get("tree");
+	total_get[i][j][k] = tree[i][j][k]->GetEntries();
 	tree[i][j][k]->SetBranchAddress("nhMppc",&nhMppc[i][j][k]);
 	hist_simul[i][j][k] = new TH1D(Form("simul%d%d%d",x_pos[i],y_pos[j],mom[k]),Form("simul%d%d%d",x_pos[i],y_pos[j],mom[k]),50,0,50);
 	fit_simul[i][j][k] = new TF1(Form("f_simul%d%d%d",x_pos[i],y_pos[j],mom[k]),"gaus(0)",0,100);
 	evt[i][j][k]=0;
 	passed = 0;
 	
-	for(int n=0;n<1000;n++){
+	for(int n=0;n<total_get[i][j][k];n++){
 	  tree[i][j][k]->GetEntry(n);
 	  hist_simul[i][j][k]->Fill(nhMppc[i][j][k]);
 	  hist_total->Fill(nhMppc[i][j][k]);
 
-	  if(nhMppc[i][j][k]>4)passed =1;
-
+	  if(nhMppc[i][j][k]>9)passed =1;
 	  else{passed = 0;}
+	  for(int ef=0;ef<6;ef++){
+	    if(nhMppc[i][j][k]>ef+4)pass_to[ef]=1;
+	    else if(nhMppc[i][j][k]<=ef+4){pass_to[ef]=0;}
+	  }
+
+	  
 	  eff[k][i]->Fill(passed,y_pos[j]);
+	  for(int ef=0;ef<6;ef++){
+	    eff_total->Fill(pass_to[ef],ef+5);
+	  }
 	  
 	  
 	}
@@ -142,8 +159,17 @@ void version_npe(){
 
   TCanvas *c_total = new TCanvas("c_total","c_total",800,650);
   hist_total->Draw();
-    
-    
+  auto *hist_normal = hist_total->DrawNormalized();
+
+  TCanvas *c_eff = new TCanvas("c_eff","c_eff",800,650);
+  eff_total->Draw();
+
+  TFile* file_save = new TFile("simul_8.root","recreate");
+  hist_normal->Write();
+  eff_total->Write();
+  file_save->Close();
+
+  
       
 
   

@@ -258,6 +258,7 @@ void gain_check(){
       hist_elph[i][j] = new TH1D(Form("hist_BAC%d_Ch%d",i+1,j),Form("hist_BAC%d_Ch%d",i+1,j+14),200,50,250);
       fit_elph[i][j] = new TF1(Form("fit_BAC%d_Ch%d",i+1,j+14),Gain_Fitting_1,50,250,8);
 
+
       //best condition
 
 
