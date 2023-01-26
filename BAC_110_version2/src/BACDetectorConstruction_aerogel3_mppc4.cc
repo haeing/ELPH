@@ -369,9 +369,18 @@ G4VPhysicalVolume* BACDetectorConstruction_aerogel3_mppc4::Construct()
   Aero2LW = new G4LogicalVolume(Aero2,Aerogel2,"Aero2");
   Aero3LW = new G4LogicalVolume(Aero3,Aerogel3,"Aero3");
 
+
+  //Three Aerogels
+  /*
   new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,-Aeroz2/2-Aero_space-Aeroz1/2),Aero1LW,"Aero1",logicWorld,false,123,checkOverlaps);
   new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,0*mm),Aero2LW,"Aero2",logicWorld,false,123,checkOverlaps);
   new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,+Aeroz2/2+Aero_space+Aeroz3/2),Aero3LW,"Aero3",logicWorld,false,123,checkOverlaps);
+  */
+
+  //Two Aerogels
+  new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,-Aeroz2/2-Aero_space-Aeroz1/2),Aero1LW,"Aero1",logicWorld,false,123,checkOverlaps);
+  new G4PVPlacement(0,G4ThreeVector(0*mm,0*mm,0*mm),Aero2LW,"Aero2",logicWorld,false,123,checkOverlaps);
+
 
 
   
@@ -467,9 +476,20 @@ G4VPhysicalVolume* BACDetectorConstruction_aerogel3_mppc4::Construct()
   G4Box* MPPC = new G4Box("MPPC",12*mm,12*mm,mppc_thick/2);
   MPPCLW = new G4LogicalVolume(MPPC,Epoxi,"MPPC");
   G4double ml = 30;
+  //Four MPPCs
+  /*
   for(int i=0;i<4;i++){
     new G4PVPlacement(0,G4ThreeVector(-(ml*1.5)*mm+(ml*i)*mm,0,0),MPPCLW,"MPPC",mppcworld,false,i+1,checkOverlaps);
   }
+  */
+
+  //Three MPPCs
+  new G4PVPlacement(0,G4ThreeVector(-ml*mm,0,0),MPPCLW,"MPPC",mppcworld,false,1,checkOverlaps);
+  new G4PVPlacement(0,G4ThreeVector(0,0,0),MPPCLW,"MPPC",mppcworld,false,2,checkOverlaps);
+  new G4PVPlacement(0,G4ThreeVector(ml*mm,0,0),MPPCLW,"MPPC",mppcworld,false,3,checkOverlaps);
+  
+
+  
 
 
   //visattributes------------------------------------------------
@@ -598,7 +618,7 @@ void BACDetectorConstruction_aerogel3_mppc4::ConstructSDandField()
   G4SDManager::GetSDMpointer()->AddNewDetector(aeroSD);
   Aero1LW->SetSensitiveDetector(aeroSD);
   Aero2LW->SetSensitiveDetector(aeroSD);
-  Aero3LW->SetSensitiveDetector(aeroSD);
+  //Aero3LW->SetSensitiveDetector(aeroSD);
 
 
 
