@@ -60,7 +60,7 @@ void version_npe(){
     for(int j=0;j<Y;j++){
       for(int k=0;k<M;k++){
 	
-	file[i][j][k] = new TFile(Form("../../ELPH_data/simul_110_par_aerogel1/bac_x_%dmm_y_%dmm_mom_%d.root",x_pos[i],y_pos[j],mom[k]),"read");
+	file[i][j][k] = new TFile(Form("../../ELPH_data/simul_4/bac_x_%dmm_y_%dmm_mom_%d.root",x_pos[i],y_pos[j],mom[k]),"read");
 	tree[i][j][k] = (TTree*)file[i][j][k]->Get("tree");
 	total_get[i][j][k] = tree[i][j][k]->GetEntries();
 	tree[i][j][k]->SetBranchAddress("nhMppc",&nhMppc[i][j][k]);
@@ -164,7 +164,7 @@ void version_npe(){
   TCanvas *c_eff = new TCanvas("c_eff","c_eff",800,650);
   eff_total->Draw();
 
-  TFile* file_save = new TFile("simul_8.root","recreate");
+  TFile* file_save = new TFile("simul_4.root","recreate");
   hist_normal->Write();
   eff_total->Write();
   file_save->Close();
